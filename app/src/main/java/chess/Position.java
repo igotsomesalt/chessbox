@@ -61,6 +61,10 @@ class Position {
         );
     }
 
+    public Position(String fenString) {
+        this(Fen.fromFen(fenString));
+    }
+
     public Position(
         long[] bitboards, int castlingRights, 
         int epSq, boolean whiteToMove,
@@ -88,5 +92,9 @@ class Position {
         } else {
             castlingRights &= ~mask;
         }
+    }
+
+    public String toFen(String fenString) {
+        return Fen.toFen(this);
     }
 }
