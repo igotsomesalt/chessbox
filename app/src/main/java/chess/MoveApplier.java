@@ -82,8 +82,8 @@ public class MoveApplier {
     }
 
     static void doKingCastle(Position position, boolean w) {
-        int king = w ? Bitboard.WHITE_KING : Bitboard.BLACK_KING;
-        int rook = w ? Bitboard.WHITE_ROOK : Bitboard.BLACK_ROOK;
+        int king = w ? Position.WHITE_KING : Position.BLACK_KING;
+        int rook = w ? Position.WHITE_ROOK : Position.BLACK_ROOK;
 
         int kingFrom = w ? Bitboard.E1 : Bitboard.E8;
         int kingTo   = w ? Bitboard.G1 : Bitboard.G8;
@@ -101,8 +101,8 @@ public class MoveApplier {
     }
 
     public static void doQueenCastle(Position position, boolean w) {
-        int king = w ? Bitboard.WHITE_KING : Bitboard.BLACK_KING;
-        int rook = w ? Bitboard.WHITE_ROOK : Bitboard.BLACK_ROOK;
+        int king = w ? Position.WHITE_KING : Position.BLACK_KING;
+        int rook = w ? Position.WHITE_ROOK : Position.BLACK_ROOK;
 
         int kingFrom = w ? Bitboard.E1 : Bitboard.E8;
         int kingTo   = w ? Bitboard.C1 : Bitboard.C8;

@@ -2,12 +2,6 @@ package chess;
 
 public class Bitboard {
 
-    public static final int WHITE_KING = 5;
-    public static final int WHITE_ROOK = 3;
-
-    public static final int BLACK_KING = 11;
-    public static final int BLACK_ROOK = 9;
-
     public static final int G1 = 6;
     public static final int F1 = 5;
     public static final int E1 = 4;

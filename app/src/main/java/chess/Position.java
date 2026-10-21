@@ -1,6 +1,21 @@
 package chess;
 
 class Position {
+
+    public static final int WHITE_KING = 5;
+    public static final int WHITE_QUEEN = 4;
+    public static final int WHITE_ROOK = 3;
+    public static final int WHITE_BISHOP = 2;
+    public static final int WHITE_KNIGHT = 1;
+    public static final int WHITE_PAWN = 0;
+
+    public static final int BLACK_KING = 11;
+    public static final int BLACK_QUEEN = 10;
+    public static final int BLACK_ROOK = 9;    
+    public static final int BLACK_BISHOP = 8;
+    public static final int BLACK_KNIGHT = 7;
+    public static final int BLACK_PAWN = 6;
+
     // bitboard array indexes:
     // 0: w pawn; 1: w knight; 2: w bishop; 3: w rook; 4: w queen; 5: w king
     // 6: b pawn; 7: b knight; 8: b bishop; 9: b rook; 10: b queen; 11: b king
