@@ -1,6 +1,6 @@
 package chess;
 
-class Position {
+public class Position {
 
     public static final int WHITE_KING = 5;
     public static final int WHITE_QUEEN = 4;
@@ -11,7 +11,7 @@ class Position {
 
     public static final int BLACK_KING = 11;
     public static final int BLACK_QUEEN = 10;
-    public static final int BLACK_ROOK = 9;    
+    public static final int BLACK_ROOK = 9;
     public static final int BLACK_BISHOP = 8;
     public static final int BLACK_KNIGHT = 7;
     public static final int BLACK_PAWN = 6;
@@ -22,9 +22,15 @@ class Position {
     // 0: w pawn; 1: w knight; 2: w bishop; 3: w rook; 4: w queen; 5: w king
     // 6: b pawn; 7: b knight; 8: b bishop; 9: b rook; 10: b queen; 11: b king
     public long[] bitboards;
+
+    // Piece occupying each square.
+    // Index = square (A1 = 0, H8 = 63)
+    // Value = piece constant or NO_PIECE
+    public int[] pieceAt;
+
     public boolean whiteToMove;
     public int epSq;
-    
+
     // 1st bit = wk; 2nd = wq; 3rd = bk; 4th = bq
     public int castlingRights;
 
@@ -55,8 +61,8 @@ class Position {
 
     public Position(Position position) {
         this(
-            position.bitboards, position.castlingRights, 
-            position.epSq, position.whiteToMove, 
+            position.bitboards, position.castlingRights,
+            position.epSq, position.whiteToMove,
             position.halfMoveClock, position.fullMoveClock
         );
     }
@@ -66,9 +72,8 @@ class Position {
     }
 
     public Position(
-        long[] bitboards, int castlingRights, 
-        int epSq, boolean whiteToMove,
-        int halfMoveClock, int fullMoveClock
+        long[] bitboards, int castlingRights, int epSq,
+        boolean whiteToMove, int halfMoveClock, int fullMoveClock
     ) {
         this.bitboards = bitboards;
         this.epSq = epSq;
@@ -76,6 +81,33 @@ class Position {
         this.whiteToMove = whiteToMove;
         this.halfMoveClock = halfMoveClock;
         this.fullMoveClock = fullMoveClock;
+
+        this.pieceAt = new int[64];
+        initializePieceAt();
+    }
+
+    private void initializePieceAt() {
+        // Default every square to NO_PIECE.
+        for (int square = 0; square < 64; square++) {
+            pieceAt[square] = NO_PIECE;
+        }
+
+        // Populate the array from the bitboards.
+        for (int piece = 0; piece < 12; piece++) {
+            long board = bitboards[piece];
+
+            while (board != 0) {
+                int square = Long.numberOfTrailingZeros(board);
+
+                pieceAt[square] = piece;
+
+                board &= board - 1;
+            }
+        }
+    }
+
+    public int getPieceAt(int square) {
+        return pieceAt[square];
     }
 
     public boolean getCastlingRights(boolean kingside, boolean white) {
@@ -83,7 +115,11 @@ class Position {
         return ((castlingRights >>> shift) & 1) == 1;
     }
 
-    public void setCastlingRights(boolean kingside, boolean white, boolean value) {
+    public void setCastlingRights(
+        boolean kingside,
+        boolean white,
+        boolean value
+    ) {
         int shift = (kingside ? 0 : 1) + (white ? 0 : 2);
         int mask = 1 << shift;
 
