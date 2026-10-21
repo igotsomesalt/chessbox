@@ -13,7 +13,6 @@ public class MoveApplier {
             doKingCastle(position, white);
             position.whiteToMove = !position.whiteToMove;
             position.epSq = -1;
-            position.setCastlingRights(true, white, false);
             return;
         }
 
@@ -21,7 +20,6 @@ public class MoveApplier {
             doQueenCastle(position, white);
             position.whiteToMove = !position.whiteToMove;
             position.epSq = -1;
-            position.setCastlingRights(false, white, false);
             return;
         }
 
