@@ -11,6 +11,17 @@ class Move {
         encoded = encodedMove;
     }
 
+    public static int encode(int from, int to, int piece, int capPiece, int promPiece, int castle, boolean ep) {
+        return 
+            from |
+            (to << 6) |
+            (piece << 12) |
+            (capPiece << 16) |
+            (promPiece << 20) |
+            (castle << 24) |
+            (ep ? 1 : 0 << 26);
+    }
+
     public static int getSq1(int encoded) {
         return encoded & 0x3f;
     }
