@@ -1,6 +1,6 @@
 package chess;
 
-class Move {
+public class Move {
 	// encoded move format:
 	//             EP  Castle  PromPiece  CapPiece     Piece  Sq2     Sq1
 	// 0b00000000_|0___00_____00|00______000|0________0000|___0000|00_00|0000
