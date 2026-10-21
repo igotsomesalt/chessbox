@@ -13,6 +13,10 @@ public class MoveApplier {
             doKingCastle(position, white);
             position.whiteToMove = !position.whiteToMove;
             position.epSq = -1;
+
+            position.halfMoveClock++;
+            if (!position.whiteToMove) position.fullMoveClock++;
+
             return;
         }
 
@@ -20,6 +24,10 @@ public class MoveApplier {
             doQueenCastle(position, white);
             position.whiteToMove = !position.whiteToMove;
             position.epSq = -1;
+
+            position.halfMoveClock++;
+            if (!position.whiteToMove) position.fullMoveClock++;
+
             return;
         }
 
@@ -42,12 +50,12 @@ public class MoveApplier {
         }
 
         // Promotion
-        else if (Move.getPromPiece(move) != 0) {
+        else if (Move.getPromPiece(move) != Position.NO_PIECE) {
             int promotedPiece = Move.getPromPiece(move);
 
             // Remove captured piece, if any
             int capturedPiece = Move.getCapPiece(move);
-            if (capturedPiece != 0) {
+            if (capturedPiece != Position.NO_PIECE) {
                 position.bitboards[capturedPiece] &= ~toMask;
             }
 
@@ -60,12 +68,23 @@ public class MoveApplier {
             // Remove captured piece, if any
             int capturedPiece = Move.getCapPiece(move);
 
-            if (capturedPiece != 0) {
+            if (capturedPiece != Position.NO_PIECE) {
                 position.bitboards[capturedPiece] &= ~toMask;
+                updateCastlingRightsAfterCapture(position, capturedPiece, capturedPiece);
             }
 
             // Move piece
             position.bitboards[piece] |= toMask;
+        }
+
+        // Update castling rights
+
+        if (piece == Position.WHITE_KING) {
+            position.setCastlingRights(false, true, false);
+            position.setCastlingRights(false, true, true);
+        } else if (piece == Position.BLACK_KING) {
+            position.setCastlingRights(false, false, false);
+            position.setCastlingRights(false, false, true);
         }
 
         // Update en passant square
@@ -75,6 +94,21 @@ public class MoveApplier {
             position.epSq = from + 8;
         } else if (piece == 6 && from - to == 16) {
             position.epSq = from - 8;
+        }
+
+        if (piece == Position.WHITE_PAWN ||
+            piece == Position.BLACK_PAWN ||
+            Move.getCapPiece(move) != Position.NO_PIECE ||
+            Move.getEP(move) == 1) {
+
+            position.halfMoveClock = 0;
+
+        } else {
+            position.halfMoveClock++;
+        }
+
+        if (!position.whiteToMove) {
+            position.fullMoveClock++;
         }
 
         // Change side to move
@@ -117,5 +151,25 @@ public class MoveApplier {
         position.bitboards[rook] |=  (1L << rookTo);
 
         position.setCastlingRights(false, w, false);
+    }
+
+        private static void updateCastlingRightsAfterCapture(
+            Position position,
+            int capturedPiece,
+            int square
+    ) {
+        if (capturedPiece == Position.WHITE_ROOK) {
+            if (square == Bitboard.H1) {
+                position.setCastlingRights(true, true, false);
+            } else if (square == Bitboard.A1) {
+                position.setCastlingRights(false, true, false);
+            }
+        } else if (capturedPiece == Position.BLACK_ROOK) {
+            if (square == Bitboard.H8) {
+                position.setCastlingRights(true, false, false);
+            } else if (square == Bitboard.A8) {
+                position.setCastlingRights(false, false, false);
+            }
+        }
     }
 }

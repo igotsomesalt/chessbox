@@ -16,6 +16,8 @@ class Position {
     public static final int BLACK_KNIGHT = 7;
     public static final int BLACK_PAWN = 6;
 
+    public static final int NO_PIECE = 15;
+
     // bitboard array indexes:
     // 0: w pawn; 1: w knight; 2: w bishop; 3: w rook; 4: w queen; 5: w king
     // 6: b pawn; 7: b knight; 8: b bishop; 9: b rook; 10: b queen; 11: b king
@@ -25,6 +27,9 @@ class Position {
     
     // 1st bit = wk; 2nd = wq; 3rd = bk; 4th = bq
     public int castlingRights;
+
+    public int halfMoveClock;
+    public int fullMoveClock;
 
     public static final long[] DEFAULT_BITBOARDS = {
         0x000000000000ff00L, // w pawns
@@ -45,14 +50,28 @@ class Position {
     public static final int DEFAULT_CASTLING = 0xf;
 
     public Position() {
-        this(DEFAULT_BITBOARDS, DEFAULT_CASTLING, -1, true);
+        this(DEFAULT_BITBOARDS, DEFAULT_CASTLING, -1, true, 0, 1);
     }
 
-    public Position(long[] bitboards, int castlingRights, int epSq, boolean whiteToMove) {
+    public Position(Position position) {
+        this(
+            position.bitboards, position.castlingRights, 
+            position.epSq, position.whiteToMove, 
+            position.halfMoveClock, position.fullMoveClock
+        );
+    }
+
+    public Position(
+        long[] bitboards, int castlingRights, 
+        int epSq, boolean whiteToMove,
+        int halfMoveClock, int fullMoveClock
+    ) {
         this.bitboards = bitboards;
         this.epSq = epSq;
         this.castlingRights = castlingRights;
         this.whiteToMove = whiteToMove;
+        this.halfMoveClock = halfMoveClock;
+        this.fullMoveClock = fullMoveClock;
     }
 
     public boolean getCastlingRights(boolean kingside, boolean white) {
