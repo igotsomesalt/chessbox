@@ -61,7 +61,7 @@ public class Position {
 
     public Position(Position position) {
         this(
-            position.bitboards, position.castlingRights,
+            position.bitboards.clone(), position.castlingRights,
             position.epSq, position.whiteToMove,
             position.halfMoveClock, position.fullMoveClock
         );
