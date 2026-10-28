@@ -11,23 +11,25 @@ public class MoveApplier {
         // Castling
         if (castle == 1) {
             doKingCastle(position, white);
-            position.whiteToMove = !position.whiteToMove;
             position.epSq = -1;
 
             position.halfMoveClock++;
             if (!position.whiteToMove) position.fullMoveClock++;
 
+            position.whiteToMove = !position.whiteToMove;
+            position.rebuildDerivedState();
             return;
         }
 
         if (castle == 2) {
             doQueenCastle(position, white);
-            position.whiteToMove = !position.whiteToMove;
             position.epSq = -1;
 
             position.halfMoveClock++;
             if (!position.whiteToMove) position.fullMoveClock++;
 
+            position.whiteToMove = !position.whiteToMove;
+            position.rebuildDerivedState();
             return;
         }
 
@@ -70,7 +72,7 @@ public class MoveApplier {
 
             if (capturedPiece != Position.NO_PIECE) {
                 position.bitboards[capturedPiece] &= ~toMask;
-                updateCastlingRightsAfterCapture(position, capturedPiece, capturedPiece);
+                updateCastlingRightsAfterCapture(position, capturedPiece, to);
             }
 
             // Move piece
@@ -110,9 +112,9 @@ public class MoveApplier {
         if (!position.whiteToMove) {
             position.fullMoveClock++;
         }
-
-        // Change side to move
+        
         position.whiteToMove = !position.whiteToMove;
+        position.rebuildDerivedState();
     }
 
     static void doKingCastle(Position position, boolean w) {

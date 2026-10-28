@@ -89,6 +89,7 @@ public class Position {
 
         this.pieceAt = new int[64];
         initializePieceAt();
+        rebuildDerivedState();
     }
 
     private void initializePieceAt() {
@@ -106,6 +107,39 @@ public class Position {
 
                 pieceAt[square] = piece;
 
+                board &= board - 1;
+            }
+        }
+    }
+
+    public void rebuildDerivedState() {
+        initializePieceAt();
+
+        whitePieces = 0L;
+        blackPieces = 0L;
+
+        for (int piece = 0; piece < 6; piece++) {
+            whitePieces |= bitboards[piece];
+        }
+
+        for (int piece = 6; piece < 12; piece++) {
+            blackPieces |= bitboards[piece];
+        }
+
+        allPieces = whitePieces | blackPieces;
+    }
+
+    void rebuildPieceAt() {
+        for (int square = 0; square < 64; square++) {
+            pieceAt[square] = NO_PIECE;
+        }
+
+        for (int piece = 0; piece < 12; piece++) {
+            long board = bitboards[piece];
+
+            while (board != 0) {
+                int square = Long.numberOfTrailingZeros(board);
+                pieceAt[square] = piece;
                 board &= board - 1;
             }
         }
