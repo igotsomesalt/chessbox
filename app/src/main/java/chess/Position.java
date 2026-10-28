@@ -28,6 +28,11 @@ public class Position {
     // Value = piece constant or NO_PIECE
     public int[] pieceAt;
 
+    // All piece masks.
+    public long allPieces;
+    public long whitePieces;
+    public long blackPieces;
+
     public boolean whiteToMove;
     public int epSq;
 
@@ -130,7 +135,23 @@ public class Position {
         }
     }
 
-    public String toFen(String fenString) {
+    public String toFen() {
         return Fen.toFen(this);
+    }
+
+    public boolean isEmpty(int square) {
+        return (allPieces & 1L << square) == 0;
+    }
+
+    public long getSideOccupied(boolean white) {
+        return white ? whitePieces : blackPieces;
+    }
+
+    public long getOccupied() {
+        return allPieces;
+    }
+
+    public boolean hasPiece(int square, int piece) {
+        return (bitboards[piece] & 1L << square) != 0;
     }
 }
