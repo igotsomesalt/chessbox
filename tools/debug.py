@@ -40,6 +40,11 @@ def to_unsigned_64(value: int) -> int:
     return value & 0xFFFFFFFFFFFFFFFF
 
 
+def square_int(alg: str) -> int:
+    """Convert algebraic notation to a 0-63 square index."""
+    return (int(alg[1]) - 1) * 8 + (ord(alg[0].lower()) - ord('a'))
+
+
 def square_name(square: int) -> str:
     """Convert a 0-63 square index to algebraic notation."""
     file = square % 8
@@ -96,6 +101,13 @@ def to_signed_32(value: int) -> int:
         return value - 0x100000000
 
     return value
+
+
+def print_sq(value):
+    if type(value) is str:
+        print(f"Square index: {square_int(value)}")
+    if type(value) is int:
+        print(f"Algebraic notation: {square_name(value)}")
 
 
 def print_move(value: int):
@@ -268,6 +280,13 @@ def msb(value: int):
 # ============================================================
 # Commands
 # ============================================================
+def command_sq(args):
+    try:
+        value = parse_int(args.value)
+    except ValueError:
+        value = args.value
+
+    print_sq(value)
 
 def command_move(args):
     value = parse_int(args.value)
@@ -317,6 +336,17 @@ def build_parser():
         dest="command",
         required=True
     )
+
+    # sq
+    p = subparsers.add_parser(
+        "sq",
+        help="Convert between algebraic notation and 0-63 square indexes both ways"
+    )
+    p.add_argument(
+        "value",
+        help="Signed decimal or hexadecimal square index"
+    )
+    p.set_defaults(func=command_sq)
 
     # mv
     p = subparsers.add_parser(
