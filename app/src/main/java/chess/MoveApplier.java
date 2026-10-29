@@ -1,8 +1,41 @@
 package chess;
 
 public class MoveApplier {
+
+    public static final class State {
+        int move;
+        int capturedPiece;
+        int capturedSquare;
+        int promotedPiece;
+
+        int oldCastlingRights;
+        int oldEpSq;
+        int oldHalfMoveClock;
+        int oldFullMoveClock;
+        boolean oldWhiteToMove;
+
+        long oldWhitePieces;
+        long oldBlackPieces;
+        long oldAllPieces;
+    }
     
-    static void apply(Position position, int move) {
+    static State apply(Position position, int move) {
+        State state = new State();
+        state.move = move;
+        state.capturedPiece = Move.getCapPiece(move);
+        state.capturedSquare = -1;
+        state.promotedPiece = Move.getPromPiece(move);
+
+        state.oldCastlingRights = position.castlingRights;
+        state.oldEpSq = position.epSq;
+        state.oldHalfMoveClock = position.halfMoveClock;
+        state.oldFullMoveClock = position.fullMoveClock;
+        state.oldWhiteToMove = position.whiteToMove;
+
+        state.oldWhitePieces = position.whitePieces;
+        state.oldBlackPieces = position.blackPieces;
+        state.oldAllPieces = position.allPieces;
+
         int piece = Move.getPiece(move);
         boolean white = piece < 6;
 
@@ -18,7 +51,7 @@ public class MoveApplier {
 
             position.whiteToMove = !position.whiteToMove;
             position.rebuildDerivedState();
-            return;
+            return state;
         }
 
         if (castle == 2) {
@@ -30,7 +63,7 @@ public class MoveApplier {
 
             position.whiteToMove = !position.whiteToMove;
             position.rebuildDerivedState();
-            return;
+            return state;
         }
 
         int from = Move.getSq1(move);
@@ -115,6 +148,7 @@ public class MoveApplier {
         
         position.whiteToMove = !position.whiteToMove;
         position.rebuildDerivedState();
+        return state;
     }
 
     static void doKingCastle(Position position, boolean w) {
@@ -155,11 +189,7 @@ public class MoveApplier {
         position.setCastlingRights(false, w, false);
     }
 
-        private static void updateCastlingRightsAfterCapture(
-            Position position,
-            int capturedPiece,
-            int square
-    ) {
+    private static void updateCastlingRightsAfterCapture(Position position, int capturedPiece, int square) {
         if (capturedPiece == Position.WHITE_ROOK) {
             if (square == Bitboard.H1) {
                 position.setCastlingRights(true, true, false);
@@ -173,5 +203,87 @@ public class MoveApplier {
                 position.setCastlingRights(false, false, false);
             }
         }
+    }
+
+    public static void undo(Position position, State state) {
+        int move = state.move;
+
+        int piece = Move.getPiece(move);
+        boolean white = piece < 6;
+        int castle = Move.getCastle(move);
+
+        if (castle == 1) undoKingCastle(position, white);
+        else if (castle == 2) undoQueenCastle(position, white);
+
+        // Normal move
+        else {
+            int from = Move.getSq1(move);
+            int to = Move.getSq2(move);
+
+            long fromMask = 1L << from;
+            long toMask = 1L << to;
+
+            if (state.promotedPiece != Position.NO_PIECE) {
+                position.bitboards[state.promotedPiece] &= ~toMask;
+                position.bitboards[piece] |= fromMask;
+            }
+
+            else {
+                position.bitboards[piece] &= ~toMask;
+                position.bitboards[piece] |= fromMask;
+            }
+
+            // Restore captured piece.
+            if (state.capturedPiece != Position.NO_PIECE) {
+                position.bitboards[state.capturedPiece] |= 1L << state.capturedSquare;
+            }
+        }
+
+        // Restore all state that can change during a move.
+        position.castlingRights = state.oldCastlingRights;
+        position.epSq = state.oldEpSq;
+        position.halfMoveClock = state.oldHalfMoveClock;
+        position.fullMoveClock = state.oldFullMoveClock;
+        position.whiteToMove = state.oldWhiteToMove;
+
+        position.whitePieces = state.oldWhitePieces;
+        position.blackPieces = state.oldBlackPieces;
+        position.allPieces = state.oldAllPieces;
+
+        position.rebuildPieceAt();
+    }
+
+    private static void undoKingCastle(Position position, boolean white) {
+        int king = white ? Position.WHITE_KING : Position.BLACK_KING;
+        int rook = white ? Position.WHITE_ROOK : Position.BLACK_ROOK;
+
+        int kingFrom = white ? Bitboard.E1 : Bitboard.E8;
+        int kingTo   = white ? Bitboard.G1 : Bitboard.G8;
+
+        int rookFrom = white ? Bitboard.H1 : Bitboard.H8;
+        int rookTo   = white ? Bitboard.F1 : Bitboard.F8;
+
+        position.bitboards[king] &= ~(1L << kingTo);
+        position.bitboards[king] |= 1L << kingFrom;
+
+        position.bitboards[rook] &= ~(1L << rookTo);
+        position.bitboards[rook] |= 1L << rookFrom;
+    }
+
+    private static void undoQueenCastle(Position position, boolean white) {
+        int king = white ? Position.WHITE_KING : Position.BLACK_KING;
+        int rook = white ? Position.WHITE_ROOK : Position.BLACK_ROOK;
+
+        int kingFrom = white ? Bitboard.E1 : Bitboard.E8;
+        int kingTo   = white ? Bitboard.C1 : Bitboard.C8;
+
+        int rookFrom = white ? Bitboard.A1 : Bitboard.A8;
+        int rookTo   = white ? Bitboard.D1 : Bitboard.D8;
+
+        position.bitboards[king] &= ~(1L << kingTo);
+        position.bitboards[king] |= 1L << kingFrom;
+
+        position.bitboards[rook] &= ~(1L << rookTo);
+        position.bitboards[rook] |= 1L << rookFrom;
     }
 }
