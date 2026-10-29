@@ -110,6 +110,63 @@ def print_sq(value):
         print(f"Algebraic notation: {square_name(value)}")
 
 
+def print_fen(fen: str):
+    """Print a chess position represented by a FEN string."""
+
+    fields = fen.strip().split()
+
+    if len(fields) != 6:
+        raise ValueError(
+            "FEN must contain 6 fields: "
+            "board side castling en-passant halfmove fullmove"
+        )
+
+    board, side, castling, ep, halfmove, fullmove = fields
+
+    ranks = board.split("/")
+
+    if len(ranks) != 8:
+        raise ValueError("FEN board must contain 8 ranks")
+
+    print()
+    print(f"FEN: {fen}")
+    print()
+
+    print("    a b c d e f g h")
+    print("  +-----------------+")
+
+    for rank_index, rank_data in enumerate(ranks):
+        rank = 8 - rank_index
+        row = []
+
+        for char in rank_data:
+            if char.isdigit():
+                row.extend(["."] * int(char))
+            elif char in "PNBRQKpnbrqk":
+                row.append(char)
+            else:
+                raise ValueError(f"Invalid FEN piece: {char}")
+
+        if len(row) != 8:
+            raise ValueError(
+                f"Rank {rank} contains {len(row)} squares instead of 8"
+            )
+
+        print(f"{rank} | {' '.join(row)} |")
+
+    print("  +-----------------+")
+    print("    a b c d e f g h")
+    print()
+
+    print("Position information:")
+    print(f"  Side to move:    {'White' if side == 'w' else 'Black'}")
+    print(f"  Castling rights: {castling}")
+    print(f"  En passant:      {ep}")
+    print(f"  Halfmove clock:  {halfmove}")
+    print(f"  Fullmove number:  {fullmove}")
+    print()
+
+
 def print_move(value: int):
     """Decode and visualize an encoded Move."""
 
@@ -288,6 +345,9 @@ def command_sq(args):
 
     print_sq(value)
 
+def command_fen(args):
+    print_fen(args.value)
+
 def command_move(args):
     value = parse_int(args.value)
     print_move(value)
@@ -336,6 +396,17 @@ def build_parser():
         dest="command",
         required=True
     )
+
+    # fen
+    p = subparsers.add_parser(
+        "fen",
+        help="Visualize a FEN position"
+    )
+    p.add_argument(
+        "value",
+        help="FEN string"
+    )
+    p.set_defaults(func=command_fen)
 
     # sq
     p = subparsers.add_parser(
