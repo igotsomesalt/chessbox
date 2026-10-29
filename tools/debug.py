@@ -40,6 +40,101 @@ def to_unsigned_64(value: int) -> int:
     return value & 0xFFFFFFFFFFFFFFFF
 
 
+def square_name(square: int) -> str:
+    """Convert a 0-63 square index to algebraic notation."""
+    file = square % 8
+    rank = square // 8
+    return f"{chr(ord('a') + file)}{rank + 1}"
+
+
+def piece_name(piece: int) -> str:
+    """Convert a piece index to piece name"""
+    if piece == 0:
+        return  "white pawn"
+    if piece == 1:
+        return  "white knight"
+    if piece == 2:
+        return  "white bishop"
+    if piece == 3:
+        return  "white rook"
+    if piece == 4:
+        return  "white queen"
+    if piece == 5:
+        return  "white king"
+    if piece == 6:
+        return  "black pawn"
+    if piece == 7:
+        return  "black knight"
+    if piece == 8:
+        return  "black bishop"
+    if piece == 9:
+        return  "black rook"
+    if piece == 10:
+        return "black queen"
+    if piece == 11:
+        return "black king"
+    if piece == 15:
+        return "none"
+    return "unknown"
+
+
+def castle_name(castle: int) -> int:
+    if castle == 0:
+        return "none"
+    if castle == 1:
+        return "king side"
+    if castle == 2:
+        return "queen side"
+    return unknown
+
+
+def to_signed_32(value: int) -> int:
+    """Interpret a value as a signed Java 32-bit int."""
+    value &= 0xFFFFFFFF
+
+    if value & 0x80000000:
+        return value - 0x100000000
+
+    return value
+
+
+def print_move(value: int):
+    """Decode and visualize an encoded Move."""
+
+    # Java int is exactly 32 bits.
+    encoded = value & 0xFFFFFFFF
+    signed = to_signed_32(encoded)
+
+    sq1 = encoded & 0x3F
+    sq2 = (encoded >> 6) & 0x3F
+    piece = (encoded >> 12) & 0xF
+    cap_piece = (encoded >> 16) & 0xF
+    prom_piece = (encoded >> 20) & 0xF
+    castle = (encoded >> 24) & 0x3
+    ep = (encoded >> 26) & 0x1
+
+    print()
+    print(f"Decimal: {signed}")
+    print(f"Hex:     0x{encoded:08X}")
+    print(f"Binary:  {encoded:032b}")
+    print()
+
+    print("Move fields:")
+    print(f"  Sq1:      {sq1:2}  ({square_name(sq1)})")
+    print(f"  Sq2:      {sq2:2}  ({square_name(sq2)})")
+    print(f"  Piece:     {piece}  ({piece_name(piece)})")
+    print(f"  CapPiece:  {cap_piece}  ({piece_name(cap_piece)})")
+    print(f"  PromPiece: {prom_piece}  ({piece_name(prom_piece)})")
+    print(f"  Castle:    {castle}  ({castle_name(castle)})")
+    print(f"  EP:        {ep}  ({ep == 1})")
+
+    print()
+    print("Bit layout:")
+    print("  EP  Castle  PromPiece  CapPiece  Piece  Sq2  Sq1")
+    print("  26    24       20         16       12    6    0")
+    print()
+
+
 def print_bitboard(value: int, coordinates: bool = True):
     """
     Print a 64-bit bitboard.
@@ -174,6 +269,11 @@ def msb(value: int):
 # Commands
 # ============================================================
 
+def command_move(args):
+    value = parse_int(args.value)
+    print_move(value)
+
+
 def command_bb(args):
     value = parse_int(args.value)
     print_bitboard(value)
@@ -217,6 +317,17 @@ def build_parser():
         dest="command",
         required=True
     )
+
+    # mv
+    p = subparsers.add_parser(
+        "mv",
+        help="Decode and visualize an encoded chess move"
+    )
+    p.add_argument(
+        "value",
+        help="Signed decimal or hexadecimal encoded Move"
+    )
+    p.set_defaults(func=command_move)
 
     # bb
     p = subparsers.add_parser(
