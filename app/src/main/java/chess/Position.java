@@ -188,4 +188,16 @@ public class Position {
     public boolean hasPiece(int square, int piece) {
         return (bitboards[piece] & 1L << square) != 0;
     }
+
+    public MoveApplier.State makeMove(int move) {
+        return MoveApplier.apply(this, move);
+    }
+
+    public MoveApplier.State makeMove(Move move) {
+        return MoveApplier.apply(this, move.encoded);
+    }
+
+    public void undoMove(MoveApplier.State state) {
+        MoveApplier.undo(this, state);
+    }
 }
