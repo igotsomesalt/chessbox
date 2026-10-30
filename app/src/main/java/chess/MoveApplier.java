@@ -211,6 +211,7 @@ public class MoveApplier {
         int piece = Move.getPiece(move);
         boolean white = piece < 6;
         int castle = Move.getCastle(move);
+        boolean ep = Move.getEP(move) == 1;
 
         if (castle == 1) undoKingCastle(position, white);
         else if (castle == 2) undoQueenCastle(position, white);
@@ -235,7 +236,8 @@ public class MoveApplier {
 
             // Restore captured piece.
             if (state.capturedPiece != Position.NO_PIECE) {
-                position.bitboards[state.capturedPiece] |= 1L << state.capturedSquare;
+                int corrector = ep ? -8 : 0;
+                position.bitboards[state.capturedPiece] |= 1L << (state.capturedSquare + corrector);
             }
         }
 

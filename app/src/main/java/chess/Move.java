@@ -19,7 +19,7 @@ public class Move {
             (capPiece << 16) |
             (promPiece << 20) |
             (castle << 24) |
-            (ep ? 1 : 0 << 26);
+            ((ep ? 1 : 0) << 26);
     }
 
     public static int getSq1(int encoded) {
