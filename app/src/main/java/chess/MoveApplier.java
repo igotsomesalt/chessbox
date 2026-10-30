@@ -23,7 +23,7 @@ public class MoveApplier {
         State state = new State();
         state.move = move;
         state.capturedPiece = Move.getCapPiece(move);
-        state.capturedSquare = -1;
+        state.capturedSquare = Move.getSq2(move);
         state.promotedPiece = Move.getPromPiece(move);
 
         state.oldCastlingRights = position.castlingRights;
