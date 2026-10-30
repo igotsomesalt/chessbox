@@ -70,7 +70,7 @@ class MoveApplierTest {
 
     @Test
     void makeUnmakeCapture() {
-        Position position = new Position("4k3/8/8/8/3p4/8/4P3/4K3 w - - 0 1");
+        Position position = new Position("4k3/8/8/8/8/3p4/4P3/4K3 w - - 0 1");
 
         String originalFen = position.toFen();
 
