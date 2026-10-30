@@ -70,7 +70,7 @@ class PerftTest {
     })
     void kiwipetePerft(int depth, long expected) {
         perft(depth, expected, false, new Position(
-            "r3k2r/p1ppqpb1/bn2pnp1/2pP4/1p2P3/2N2N2/PPQ1BPPP/R3K2R w KQkq - 0 1"
+            "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1"
         ));
     }
 
