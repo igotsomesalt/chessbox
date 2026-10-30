@@ -193,8 +193,16 @@ public class Position {
         return MoveApplier.apply(this, move);
     }
 
+    public void makeMove(int move, MoveApplier.State state) {
+        MoveApplier.apply(this, move, state);
+    }
+
     public MoveApplier.State makeMove(Move move) {
         return MoveApplier.apply(this, move.encoded);
+    }
+
+    public void makeMove(Move move, MoveApplier.State state) {
+        MoveApplier.apply(this, move.encoded, state);
     }
 
     public void undoMove(MoveApplier.State state) {

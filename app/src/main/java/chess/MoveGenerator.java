@@ -12,7 +12,7 @@ public final class MoveGenerator {
 
         for (int move : pseudoMoves) {
             Position copy = new Position(position);
-            MoveApplier.apply(copy, move);
+            MoveApplier.apply(copy, move, new MoveApplier.State(move, copy));
 
             if (!isKingAttacked(copy, white)) legalMoves.add(move);
         }

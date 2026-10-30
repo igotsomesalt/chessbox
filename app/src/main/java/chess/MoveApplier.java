@@ -17,10 +17,40 @@ public class MoveApplier {
         long oldWhitePieces;
         long oldBlackPieces;
         long oldAllPieces;
+
+        public State() {
+
+        }
+
+        public State(
+            int move, int capturedPiece, int capturedSquare, int promotedPiece,
+            int oldCastlingRights, int oldEpSq, int oldHalfMoveClock, int oldFullMoveClock, boolean oldWhiteToMove,
+            long oldWhitePieces, long oldBlackPieces, long oldAllPieces
+        ) {
+            this.move = move; this.capturedPiece = capturedPiece; this.capturedSquare = capturedSquare; 
+            this.promotedPiece = promotedPiece; this.oldCastlingRights = oldCastlingRights; this.oldEpSq = oldEpSq;
+            this.oldHalfMoveClock = oldHalfMoveClock; this.oldFullMoveClock = oldFullMoveClock;
+            this.oldWhiteToMove = oldWhiteToMove; this.oldWhitePieces = oldWhitePieces; 
+            this.oldBlackPieces = oldBlackPieces; this.oldAllPieces = oldAllPieces;
+        }
+
+        public State(int move, Position position) {
+            this(
+                move, Move.getCapPiece(move), Move.getSq2(move), Move.getPromPiece(move),
+                position.castlingRights, position.epSq, position.halfMoveClock, position.fullMoveClock, 
+                position.whiteToMove, position.whitePieces, position.blackPieces, position.allPieces
+            );
+        }
+    }
+
+    public static State apply(Position position, int move) {
+        State state = new State(move, position);
+        apply(position, move, state);
+        return state;
     }
     
-    static State apply(Position position, int move) {
-        State state = new State();
+    public static void apply(Position position, int move, State state) {
+
         state.move = move;
         state.capturedPiece = Move.getCapPiece(move);
         state.capturedSquare = Move.getSq2(move);
@@ -51,7 +81,7 @@ public class MoveApplier {
 
             position.whiteToMove = !position.whiteToMove;
             position.rebuildDerivedState();
-            return state;
+            return;
         }
 
         if (castle == 2) {
@@ -63,7 +93,7 @@ public class MoveApplier {
 
             position.whiteToMove = !position.whiteToMove;
             position.rebuildDerivedState();
-            return state;
+            return;
         }
 
         int from = Move.getSq1(move);
@@ -148,7 +178,6 @@ public class MoveApplier {
         
         position.whiteToMove = !position.whiteToMove;
         position.rebuildDerivedState();
-        return state;
     }
 
     static void doKingCastle(Position position, boolean w) {
