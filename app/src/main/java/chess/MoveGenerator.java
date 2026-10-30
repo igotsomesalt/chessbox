@@ -212,7 +212,7 @@ public final class MoveGenerator {
         int king = whiteToMove ? Position.WHITE_KING : Position.BLACK_KING;
         long kingBoard = position.bitboards[king];
 
-        if (kingBoard == 0) return true;
+        if (kingBoard == 0) return false;
 
         int square = Long.numberOfTrailingZeros(kingBoard);
         return isSquareAttacked(position, square, !whiteToMove);
