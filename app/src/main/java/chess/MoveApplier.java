@@ -122,6 +122,7 @@ public class MoveApplier {
             int capturedPiece = Move.getCapPiece(move);
             if (capturedPiece != Position.NO_PIECE) {
                 position.bitboards[capturedPiece] &= ~toMask;
+                updateCastlingRightsAfterCapture(position, capturedPiece, to);
             }
 
             // Put promoted piece on destination
@@ -145,11 +146,11 @@ public class MoveApplier {
         // Update castling rights
 
         if (piece == Position.WHITE_KING) {
+            position.setCastlingRights(true, true, false);
             position.setCastlingRights(false, true, false);
-            position.setCastlingRights(false, true, true);
         } else if (piece == Position.BLACK_KING) {
+            position.setCastlingRights(true, false, false);
             position.setCastlingRights(false, false, false);
-            position.setCastlingRights(false, false, true);
         }
 
         // Update en passant square
@@ -265,7 +266,7 @@ public class MoveApplier {
 
             // Restore captured piece.
             if (state.capturedPiece != Position.NO_PIECE) {
-                int corrector = ep ? -8 : 0;
+                int corrector = (ep ? 8 : 0) * (white ? -1 : 1);
                 position.bitboards[state.capturedPiece] |= 1L << (state.capturedSquare + corrector);
             }
         }
