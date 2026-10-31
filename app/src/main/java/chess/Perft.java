@@ -1,5 +1,8 @@
 package chess;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public final class Perft {
 
     public static long perft(Position position, int depth, boolean verbose) {
@@ -17,7 +20,8 @@ public final class Perft {
             return 1;
         }
 
-        int[] moves = MoveGenerator.generateLegalMoves(position);
+        int[] mvs = MoveGenerator.generateLegalMoves(position);
+        Set<Integer> seen = new HashSet<>();
         long nodes = 0;
 
         MoveApplier.State state = states[ply];
@@ -29,7 +33,16 @@ public final class Perft {
             );
         }
 
-        for (int move : moves) {
+        for (int move : mvs) {
+            if (!seen.add(move)) {
+                System.out.println(
+                    "DUPLICATE: " +
+                    UciMoveConverter.toNotation(move) +
+                    " in " +
+                    Fen.toFen(position)
+                );
+            }
+
             MoveApplier.apply(position, move, state);
             if (verbose) System.out.println(UciMoveConverter.toNotation(move));
             nodes += perft(position, depth - 1, states, ply + 1, verbose);
