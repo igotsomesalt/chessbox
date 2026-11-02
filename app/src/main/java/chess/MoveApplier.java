@@ -156,10 +156,43 @@ public class MoveApplier {
         // Update en passant square
         position.epSq = -1;
 
-        if (piece == 0 && to - from == 16) {
-            position.epSq = from + 8;
-        } else if (piece == 6 && from - to == 16) {
-            position.epSq = from - 8;
+        if (piece == Position.WHITE_PAWN && to - from == 16) {
+            int epSquare = from + 8;
+
+            // Black pawn must be adjacent to the EP target.
+            int file = epSquare & 7;
+
+            boolean capturable =
+                    (file > 0
+                            && position.getPieceAt(epSquare + 7)
+                            == Position.BLACK_PAWN)
+                    ||
+                    (file < 7
+                            && position.getPieceAt(epSquare + 9)
+                            == Position.BLACK_PAWN);
+
+            if (capturable) {
+                position.epSq = epSquare;
+            }
+
+            } else if (piece == Position.BLACK_PAWN && from - to == 16) {
+            int epSquare = from - 8;
+
+            // White pawn must be adjacent to the EP target.
+            int file = epSquare & 7;
+
+            boolean capturable =
+                    (file > 0
+                            && position.getPieceAt(epSquare - 9)
+                            == Position.WHITE_PAWN)
+                    ||
+                    (file < 7
+                            && position.getPieceAt(epSquare - 7)
+                            == Position.WHITE_PAWN);
+
+            if (capturable) {
+                position.epSq = epSquare;
+            }
         }
 
         if (piece == Position.WHITE_PAWN ||

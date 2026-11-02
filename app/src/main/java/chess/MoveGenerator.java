@@ -51,6 +51,7 @@ public final class MoveGenerator {
     // Pawns
     private static void generatePawnMoves(Position position, MoveList moves, boolean white) {
         int pawn = white ? Position.WHITE_PAWN : Position.BLACK_PAWN;
+        int enemyPawn = white ? Position.BLACK_PAWN : Position.WHITE_PAWN;
 
         long pawns = position.bitboards[pawn];
         long occupied = position.allPieces;
@@ -84,7 +85,7 @@ public final class MoveGenerator {
                 }
             }
 
-            // Captures
+            // Normal attacks
             long pawnAttacks = MoveLookup.lookupPawnMask(from, true, white);
 
             long captures = pawnAttacks & enemy;
@@ -101,11 +102,18 @@ public final class MoveGenerator {
 
             // En passant
             if (position.epSq >= 0 && (pawnAttacks & (1L << position.epSq)) != 0) {
-                moves.add(Move.encode(
-                    from, position.epSq, pawn, 
-                    white ? Position.BLACK_PAWN : Position.WHITE_PAWN,
-                    Position.NO_PIECE, 0, true
-                ));
+
+                int capturedSquare = white ? position.epSq - 8 : position.epSq + 8;
+
+                if (capturedSquare >= 0 && capturedSquare < 64) {
+                    int capturedPiece = position.getPieceAt(capturedSquare);
+
+                    if (capturedPiece == enemyPawn) {
+                        moves.add(Move.encode(
+                            from, position.epSq, pawn, enemyPawn, Position.NO_PIECE, 0, true
+                        ));
+                    }
+                }
             }
         }
     }
