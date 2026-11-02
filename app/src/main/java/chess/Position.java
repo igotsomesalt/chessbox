@@ -80,7 +80,7 @@ public class Position {
         long[] bitboards, int castlingRights, int epSq,
         boolean whiteToMove, int halfMoveClock, int fullMoveClock
     ) {
-        this.bitboards = bitboards;
+        this.bitboards = bitboards.clone();
         this.epSq = epSq;
         this.castlingRights = castlingRights;
         this.whiteToMove = whiteToMove;
