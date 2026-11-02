@@ -221,7 +221,7 @@ class MoveApplierTest {
 
         String originalFen = position.toFen();
 
-        int move = findMove(position, "g1f3");
+        int move = findMove(position, "e2f4");
 
         MoveApplier.State state = MoveApplier.apply(position, move);
         MoveApplier.undo(position, state);
