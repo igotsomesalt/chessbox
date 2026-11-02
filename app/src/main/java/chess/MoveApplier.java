@@ -171,11 +171,10 @@ public class MoveApplier {
                             && position.getPieceAt(epSquare + 9)
                             == Position.BLACK_PAWN);
 
-            if (capturable) {
-                position.epSq = epSquare;
-            }
-
-            } else if (piece == Position.BLACK_PAWN && from - to == 16) {
+            if (capturable) position.epSq = epSquare;
+        } 
+        
+        else if (piece == Position.BLACK_PAWN && from - to == 16) {
             int epSquare = from - 8;
 
             // White pawn must be adjacent to the EP target.
