@@ -234,7 +234,7 @@ public final class MoveGenerator {
         int queen    = byWhite ? Position.WHITE_QUEEN    : Position.BLACK_QUEEN;
         int king     = byWhite ? Position.WHITE_KING     : Position.BLACK_KING;
 
-        long pawnAttacks = MoveLookup.lookupPawnMask(square, true, byWhite);
+        long pawnAttacks = MoveLookup.lookupPawnMask(square, true, !byWhite);
         if ((pawnAttacks & position.bitboards[pawn]) != 0) return true;
 
         long knightAttacks = MoveLookup.lookupMask(1, square, position.getOccupied());
