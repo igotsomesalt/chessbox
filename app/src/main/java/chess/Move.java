@@ -50,6 +50,10 @@ public class Move {
         return (encoded >>> 26) & 0x1;
     }
 
+    public static String toUci(int encoded) {
+        return UciMoveConverter.toNotation(encoded);
+    }
+
     public int getSq1() {
         return encoded & 0x3f;
     }
@@ -76,5 +80,9 @@ public class Move {
 
     public int getEP() {
         return (encoded >>> 26) & 0x1;
+    }
+
+    public String toUci() {
+        return UciMoveConverter.toNotation(encoded);
     }
 }
