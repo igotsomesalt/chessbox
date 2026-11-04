@@ -2,6 +2,7 @@ package game;
 
 import chess.Fen;
 import chess.Position;
+import engine.UciEngine;
 
 public class EnginePlayer implements Player, AutoCloseable {
 
