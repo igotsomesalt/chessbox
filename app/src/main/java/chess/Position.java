@@ -72,7 +72,7 @@ public class Position {
         );
     }
 
-    public Position(String fenString) {
+    public Position(String fenString) throws IllegalArgumentException {
         this(Fen.fromFen(fenString));
     }
 

@@ -54,7 +54,7 @@ public class Fen {
         return fen.toString();
     }
 
-    public static Position fromFen(String fen) {
+    public static Position fromFen(String fen) throws IllegalArgumentException {
         String[] fields = fen.trim().split("\\s+");
 
         if (fields.length != 6) {
