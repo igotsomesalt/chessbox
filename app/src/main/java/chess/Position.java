@@ -222,4 +222,15 @@ public class Position {
 
         return false;
     }
+
+    public boolean isInCheckmate() {
+        return  MoveGenerator.isKingAttacked(this, whiteToMove) && 
+                MoveGenerator.generateLegalMoves(this).length == 0;
+    }
+
+    public boolean isInStalemate() {
+        return  !MoveGenerator.isKingAttacked(this, whiteToMove) &&
+                 MoveGenerator.generateLegalMoves(this).length == 0;
+    }
+
 }
