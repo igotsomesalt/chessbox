@@ -208,4 +208,18 @@ public class Position {
     public void undoMove(MoveApplier.State state) {
         MoveApplier.undo(this, state);
     }
+
+    public boolean isMoveLegal(Move move) {
+        return isMoveLegal(move.encoded);
+    }
+
+    public boolean isMoveLegal(int move) {
+        int[] moves = MoveGenerator.generateLegalMoves(this);
+        
+        for (int _move : moves) {
+            if (move == _move) return true;
+        }
+
+        return false;
+    }
 }
