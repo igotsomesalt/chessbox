@@ -28,11 +28,11 @@ public class UciMoveConverter {
     }
 
 
-    public static Move toMove(String move, Position position) {
+    public static Move toMove(String move, Position position) throws IllegalArgumentException {
         return new Move(toMoveInt(move, position));
     }
 
-    public static int toMoveInt(String move, Position position) {
+    public static int toMoveInt(String move, Position position) throws IllegalArgumentException {
         if (move == null || (move.length() != 4 && move.length() != 5)) {
             throw new IllegalArgumentException("Invalid UCI move: " + move);
         }
