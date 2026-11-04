@@ -17,6 +17,7 @@ public class MoveApplier {
         long oldWhitePieces;
         long oldBlackPieces;
         long oldAllPieces;
+        long[] oldBitboards;
 
         public State() {
 
@@ -65,6 +66,7 @@ public class MoveApplier {
         state.oldWhitePieces = position.whitePieces;
         state.oldBlackPieces = position.blackPieces;
         state.oldAllPieces = position.allPieces;
+        //state.oldBitboards = position.bitboards.clone();
 
         int piece = Move.getPiece(move);
         boolean white = piece < 6;
@@ -145,6 +147,20 @@ public class MoveApplier {
 
         // Update castling rights
 
+        if (piece == Position.WHITE_ROOK) {
+            if (from == Bitboard.H1) {
+                position.setCastlingRights(true, true, false);
+            } else if (from == Bitboard.A1) {
+                position.setCastlingRights(false, true, false);
+            }
+        } else if (piece == Position.BLACK_ROOK) {
+            if (from == Bitboard.H8) {
+                position.setCastlingRights(true, false, false);
+            } else if (from == Bitboard.A8) {
+                position.setCastlingRights(false, false, false);
+            }
+        }
+
         if (piece == Position.WHITE_KING) {
             position.setCastlingRights(true, true, false);
             position.setCastlingRights(false, true, false);
@@ -173,7 +189,7 @@ public class MoveApplier {
 
             if (capturable) position.epSq = epSquare;
         } 
-        
+
         else if (piece == Position.BLACK_PAWN && from - to == 16) {
             int epSquare = from - 8;
 
@@ -230,6 +246,7 @@ public class MoveApplier {
         position.bitboards[rook] |=  (1L << rookTo);
 
         position.setCastlingRights(false, w, false);
+        position.setCastlingRights(true, w, false);
     }
 
     public static void doQueenCastle(Position position, boolean w) {
@@ -249,6 +266,7 @@ public class MoveApplier {
         position.bitboards[rook] |=  (1L << rookTo);
 
         position.setCastlingRights(false, w, false);
+        position.setCastlingRights(true, w, false);
     }
 
     private static void updateCastlingRightsAfterCapture(Position position, int capturedPiece, int square) {
@@ -313,6 +331,7 @@ public class MoveApplier {
         position.whitePieces = state.oldWhitePieces;
         position.blackPieces = state.oldBlackPieces;
         position.allPieces = state.oldAllPieces;
+        //position.bitboards = state.oldBitboards.clone();
 
         position.rebuildPieceAt();
     }
