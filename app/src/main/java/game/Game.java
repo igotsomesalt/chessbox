@@ -14,7 +14,7 @@ import chess.UciMoveConverter;
 public class Game implements Callable<Game.Result> {
 
     public static record Result(
-        Outcome outcome, Termination termination, List<String> moves, String startingFen, String endingFen, 
+        Player white, Player black, Outcome outcome, Termination termination, List<String> moves, String startingFen, String endingFen, 
         Instant startedAt, Duration duration
     ) {} 
 
@@ -88,14 +88,14 @@ public class Game implements Callable<Game.Result> {
 
             if (position.isInCheckmate()) {
                 return new Result(
-                    position.whiteToMove ? Outcome.BLACK_WIN : Outcome.WHITE_WIN, Termination.CHECKMATE,
-                    moves, startingFen, position.toFen(), startedAt, 
+                    white, black, position.whiteToMove ? Outcome.BLACK_WIN : Outcome.WHITE_WIN, 
+                    Termination.CHECKMATE, moves, startingFen, position.toFen(), startedAt, 
                     Duration.ofNanos(System.nanoTime() - startNanos)
                 );
             }
             if (position.isInStalemate()) {
                 return new Result(
-                    Outcome.DRAW, Termination.STALEMATE,
+                    white, black, Outcome.DRAW, Termination.STALEMATE,
                     moves, startingFen, position.toFen(), startedAt, 
                     Duration.ofNanos(System.nanoTime() - startNanos)
                 );
@@ -105,7 +105,7 @@ public class Game implements Callable<Game.Result> {
 
                 if (count >= 3) {
                     return new Result(
-                        Outcome.DRAW, Termination.REPETITION, 
+                        white, black, Outcome.DRAW, Termination.REPETITION, 
                         moves, startingFen, position.toFen(), startedAt, 
                         Duration.ofNanos(System.nanoTime() - startNanos)
                     );
@@ -113,7 +113,7 @@ public class Game implements Callable<Game.Result> {
         }
 
         return new Result(
-            Outcome.DRAW, Termination.STOPPED,
+            white, black, Outcome.DRAW, Termination.STOPPED,
             moves, startingFen, position.toFen(), startedAt, 
             Duration.ofNanos(System.currentTimeMillis() - startNanos)
         );
