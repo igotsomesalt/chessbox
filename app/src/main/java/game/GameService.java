@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.function.Consumer;
@@ -22,7 +22,6 @@ public class GameService {
     private final Map<Boolean, Supplier<Player>> playerFactories = new HashMap<>();
     private final List<Consumer<String>> logListeners  = new ArrayList<>();
 
-    private ExecutorService executor;
     private List<Game> games = new ArrayList<>();
 
     public GameService() {
@@ -54,7 +53,11 @@ public class GameService {
         }
 
         sendMessage(String.format("Starting %d games on %d worker threads", numGames, numThreads));
-        executor = Executors.newFixedThreadPool(numThreads);
+
+        ExecutorCompletionService<Result> completionService = new ExecutorCompletionService<>(
+            Executors.newFixedThreadPool(numThreads)
+        );
+
         long startNanos = System.nanoTime();
 
         for (int i = 0; i < numGames; i++) {
@@ -66,18 +69,25 @@ public class GameService {
             );
 
             games.add(game);
-            Future<Result> future = executor.submit(game);
+            completionService.submit(game);
+        }
 
+        for (int i = 0; i < numGames; i++) {
             try {
+                Future<Result> future = completionService.take();
                 Result result = future.get();
-                sendMessage(String.format("Game %d finished:\n" + formatResult(result, verbose) + "\n", i));
+
+                sendMessage(String.format(
+                    "Game finished:\n%s\n",
+                    formatResult(result, verbose)
+                ));
 
             } catch (ExecutionException e) {
-                Throwable cause = e.getCause();
-                sendMessage("Game failed: " + cause.getMessage());
+                sendMessage("Game failed: " + e.getCause());
 
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
+                break;
             }
         }
 
