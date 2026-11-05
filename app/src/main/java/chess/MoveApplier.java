@@ -66,7 +66,6 @@ public class MoveApplier {
         state.oldWhitePieces = position.whitePieces;
         state.oldBlackPieces = position.blackPieces;
         state.oldAllPieces = position.allPieces;
-        //state.oldBitboards = position.bitboards.clone();
 
         int piece = Move.getPiece(move);
         boolean white = piece < 6;
@@ -83,6 +82,12 @@ public class MoveApplier {
 
             position.whiteToMove = !position.whiteToMove;
             position.rebuildDerivedState();
+
+            position.zobristHash = Zobrist.updateHash(
+                position.zobristHash, move, state.capturedPiece, state.capturedSquare, 
+                state.oldCastlingRights, position.castlingRights, state.oldEpSq, position.epSq
+            );
+
             return;
         }
 
@@ -95,6 +100,12 @@ public class MoveApplier {
 
             position.whiteToMove = !position.whiteToMove;
             position.rebuildDerivedState();
+
+            position.zobristHash = Zobrist.updateHash(
+                position.zobristHash, move, state.capturedPiece, state.capturedSquare, 
+                state.oldCastlingRights, position.castlingRights, state.oldEpSq, position.epSq
+            );
+
             return;
         }
 
@@ -227,6 +238,11 @@ public class MoveApplier {
         
         position.whiteToMove = !position.whiteToMove;
         position.rebuildDerivedState();
+        
+        position.zobristHash = Zobrist.updateHash(
+            position.zobristHash, move, state.capturedPiece, state.capturedSquare, 
+            state.oldCastlingRights, position.castlingRights, state.oldEpSq, position.epSq
+        );
     }
 
     static void doKingCastle(Position position, boolean w) {
@@ -331,7 +347,6 @@ public class MoveApplier {
         position.whitePieces = state.oldWhitePieces;
         position.blackPieces = state.oldBlackPieces;
         position.allPieces = state.oldAllPieces;
-        //position.bitboards = state.oldBitboards.clone();
 
         position.rebuildPieceAt();
     }

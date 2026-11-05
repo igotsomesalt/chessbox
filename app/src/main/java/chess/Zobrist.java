@@ -73,10 +73,12 @@ public class Zobrist {
         int promotion = Move.getPromPiece(move);
         int destinationPiece = promotion != 0 ? promotion : piece;
 
-        hash ^= Zobrist.PIECES[destinationPiece][to];
+        if (destinationPiece != Position.NO_PIECE) {
+            hash ^= Zobrist.PIECES[destinationPiece][to];
+        }
 
         // Remove captured piece
-        if (capturedPiece != -1) {
+        if (capturedPiece != Position.NO_PIECE) {
             hash ^= Zobrist.PIECES[capturedPiece][capturedSquare];
         }
 
