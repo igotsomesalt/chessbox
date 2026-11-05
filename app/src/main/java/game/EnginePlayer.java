@@ -19,6 +19,11 @@ public class EnginePlayer implements Player, AutoCloseable {
         return engine.getBestMove(Fen.toFen(position), 10);
     }
 
+    @Override 
+    public String name() {
+        return engine.getConfig().name();
+    }
+
     @Override
     public void close() throws Exception {
         engine.close();

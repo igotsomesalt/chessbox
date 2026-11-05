@@ -34,6 +34,10 @@ public class UciEngine implements AutoCloseable {
         );
     }
 
+    public EngineConfig getConfig() {
+        return  config;
+    }
+
     public void send(String command) throws IOException {
         writer.write(command);
         writer.newLine();
