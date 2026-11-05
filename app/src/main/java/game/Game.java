@@ -1,5 +1,7 @@
 package game;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -9,7 +11,10 @@ import chess.UciMoveConverter;
 
 public class Game implements Callable<Game.Result> {
 
-    public static record Result(Outcome outcome, Termination termination, List<String> moves, String fen) {} 
+    public static record Result(
+        Outcome outcome, Termination termination, List<String> moves, String fen, 
+        Instant startedAt, Duration duration
+    ) {} 
 
     public enum Outcome {
         WHITE_WIN,
@@ -56,6 +61,9 @@ public class Game implements Callable<Game.Result> {
 
     @Override
     public Game.Result call() throws Exception {
+        Instant startedAt = Instant.now();
+        long startNanos = System.nanoTime();
+
         while (running && !Thread.currentThread().isInterrupted()) {
 
             Player player = position.whiteToMove ? white : black;
@@ -72,14 +80,23 @@ public class Game implements Callable<Game.Result> {
             if (position.isInCheckmate()) {
                 return new Result(
                     position.whiteToMove ? Outcome.BLACK_WIN : Outcome.WHITE_WIN, Termination.CHECKMATE,
-                    moves, position.toFen()
+                    moves, position.toFen(), startedAt, 
+                    Duration.ofNanos(System.nanoTime() - startNanos)
                 );
             }
             if (position.isInStalemate()) {
-                return new Result(Outcome.DRAW, Termination.STALEMATE, moves, position.toFen());
+                return new Result(
+                    Outcome.DRAW, Termination.STALEMATE,
+                    moves, position.toFen(), startedAt, 
+                    Duration.ofNanos(System.nanoTime() - startNanos)
+                );
             }
         }
 
-        return new Result(Outcome.DRAW, Termination.STOPPED, moves, position.toFen());
+        return new Result(
+            Outcome.DRAW, Termination.CHECKMATE,
+            moves, position.toFen(), startedAt, 
+            Duration.ofNanos(System.currentTimeMillis() - startNanos)
+        );
     }
 }

@@ -1,5 +1,7 @@
 package game;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,6 +14,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import chess.Position;
+import game.Game.Result;
 
 public class GameService {
 
@@ -34,7 +37,7 @@ public class GameService {
         logListeners.add(listener);
     }
 
-    public void start(int numGames, int numThreads) {
+    public void start(int numGames, int numThreads, boolean verbose) {
         if (numGames < 1) {
             sendMessage(String.format("Number of games must be positive, instead got %d", numGames));
             return;
@@ -52,6 +55,7 @@ public class GameService {
 
         sendMessage(String.format("Starting %d games on %d worker threads", numGames, numThreads));
         executor = Executors.newFixedThreadPool(numThreads);
+        long startNanos = System.nanoTime();
 
         for (int i = 0; i < numGames; i++) {
 
@@ -62,11 +66,11 @@ public class GameService {
             );
 
             games.add(game);
-            Future<Game.Result> future = executor.submit(game);
+            Future<Result> future = executor.submit(game);
 
             try {
-                Game.Result result = future.get();
-                sendMessage(String.format("Game %d finished: " + result, i));
+                Result result = future.get();
+                sendMessage(String.format("Game %d finished:\n" + formatResult(result, verbose) + "\n", i));
 
             } catch (ExecutionException e) {
                 Throwable cause = e.getCause();
@@ -76,6 +80,11 @@ public class GameService {
                 Thread.currentThread().interrupt();
             }
         }
+
+        sendMessage(String.format(
+            "Worker threads finished in %d ms at %s", 
+            Duration.ofNanos(System.nanoTime() - startNanos).toMillis(), Instant.now().toString()
+        ));
     }
 
     public void stop() {
@@ -88,5 +97,15 @@ public class GameService {
         for (Consumer<String> listener : logListeners) {
             listener.accept(message);
         }
+    }
+
+    private String formatResult(Result result, boolean verbose) {
+        return String.format(
+            "outcome=%s\ntermination=%s\n%s%sdate=%s\nduration=%d ms", 
+            result.outcome().toString(), result.termination().toString(),
+            verbose ? "moves=" + result.moves().toString() + "\n" : "",
+            verbose ? "fen=" + result.fen() + "\n" : "",
+            result.startedAt().toString(), result.duration().toMillis()
+        );
     }
 }
