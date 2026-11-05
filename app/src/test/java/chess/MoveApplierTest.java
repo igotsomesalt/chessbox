@@ -78,8 +78,8 @@ class MoveApplierTest {
 
         MoveApplier.State state = MoveApplier.apply(position, move);
 
-        assertEquals(Position.WHITE_PAWN, position.getPieceAt(Bitboard.D3));
-        assertEquals(Position.NO_PIECE, position.getPieceAt(Bitboard.D4));
+        assertEquals(Position.WHITE_PAWN, position.getPieceAt(Position.D3));
+        assertEquals(Position.NO_PIECE, position.getPieceAt(Position.D4));
 
         MoveApplier.undo(position, state);
 
@@ -96,8 +96,8 @@ class MoveApplierTest {
 
         MoveApplier.State state = MoveApplier.apply(position, move);
 
-        assertEquals(Position.WHITE_PAWN, position.getPieceAt(Bitboard.D6));
-        assertEquals(Position.NO_PIECE, position.getPieceAt(Bitboard.D5));
+        assertEquals(Position.WHITE_PAWN, position.getPieceAt(Position.D6));
+        assertEquals(Position.NO_PIECE, position.getPieceAt(Position.D5));
 
         MoveApplier.undo(position, state);
 
@@ -114,8 +114,8 @@ class MoveApplierTest {
 
         MoveApplier.State state = MoveApplier.apply(position, move);
 
-        assertEquals(Position.WHITE_QUEEN, position.getPieceAt(Bitboard.A8));
-        assertEquals(Position.NO_PIECE, position.getPieceAt(Bitboard.A7));
+        assertEquals(Position.WHITE_QUEEN, position.getPieceAt(Position.A8));
+        assertEquals(Position.NO_PIECE, position.getPieceAt(Position.A7));
 
         MoveApplier.undo(position, state);
 
@@ -132,8 +132,8 @@ class MoveApplierTest {
 
         MoveApplier.State state = MoveApplier.apply(position, move);
 
-        assertEquals(Position.WHITE_QUEEN, position.getPieceAt(Bitboard.B8));
-        assertEquals(Position.NO_PIECE, position.getPieceAt(Bitboard.A7));
+        assertEquals(Position.WHITE_QUEEN, position.getPieceAt(Position.B8));
+        assertEquals(Position.NO_PIECE, position.getPieceAt(Position.A7));
 
         MoveApplier.undo(position, state);
 
@@ -152,8 +152,8 @@ class MoveApplierTest {
 
         MoveApplier.State state = MoveApplier.apply(position, move);
 
-        assertEquals(Position.WHITE_KING, position.getPieceAt(Bitboard.G1));
-        assertEquals(Position.WHITE_ROOK, position.getPieceAt(Bitboard.F1));
+        assertEquals(Position.WHITE_KING, position.getPieceAt(Position.G1));
+        assertEquals(Position.WHITE_ROOK, position.getPieceAt(Position.F1));
 
         MoveApplier.undo(position, state);
 
@@ -174,8 +174,8 @@ class MoveApplierTest {
 
         MoveApplier.State state = MoveApplier.apply(position, move);
 
-        assertEquals(Position.WHITE_KING, position.getPieceAt(Bitboard.C1));
-        assertEquals(Position.WHITE_ROOK, position.getPieceAt(Bitboard.D1));
+        assertEquals(Position.WHITE_KING, position.getPieceAt(Position.C1));
+        assertEquals(Position.WHITE_ROOK, position.getPieceAt(Position.D1));
 
         MoveApplier.undo(position, state);
 
@@ -208,7 +208,7 @@ class MoveApplierTest {
 
         MoveApplier.State state = MoveApplier.apply(position, move);
 
-        assertEquals(Bitboard.E3, position.epSq);
+        assertEquals(Position.E3, position.epSq);
 
         MoveApplier.undo(position, state);
 
@@ -255,8 +255,8 @@ class MoveApplierTest {
 
         MoveApplier.State state = MoveApplier.apply(position, move);
 
-        assertEquals(Position.BLACK_PAWN, position.getPieceAt(Bitboard.E4));
-        assertEquals(Position.NO_PIECE, position.getPieceAt(Bitboard.D5));
+        assertEquals(Position.BLACK_PAWN, position.getPieceAt(Position.E4));
+        assertEquals(Position.NO_PIECE, position.getPieceAt(Position.D5));
 
         MoveApplier.undo(position, state);
 
@@ -275,8 +275,8 @@ class MoveApplierTest {
 
         MoveApplier.State state = MoveApplier.apply(position, move);
 
-        assertEquals(Position.WHITE_QUEEN, position.getPieceAt(Bitboard.H8));
-        assertEquals(Position.NO_PIECE, position.getPieceAt(Bitboard.H7));
+        assertEquals(Position.WHITE_QUEEN, position.getPieceAt(Position.H8));
+        assertEquals(Position.NO_PIECE, position.getPieceAt(Position.H7));
 
         MoveApplier.undo(position, state);
 
@@ -295,7 +295,7 @@ class MoveApplierTest {
 
         MoveApplier.State state = MoveApplier.apply(position, move);
 
-        assertEquals(Position.WHITE_QUEEN, position.getPieceAt(Bitboard.H8));
+        assertEquals(Position.WHITE_QUEEN, position.getPieceAt(Position.H8));
 
         MoveApplier.undo(position, state);
 
@@ -314,7 +314,7 @@ class MoveApplierTest {
 
         MoveApplier.State state = MoveApplier.apply(position, move);
 
-        assertEquals(Position.WHITE_QUEEN, position.getPieceAt(Bitboard.A8));
+        assertEquals(Position.WHITE_QUEEN, position.getPieceAt(Position.A8));
 
         MoveApplier.undo(position, state);
 
@@ -355,7 +355,7 @@ class MoveApplierTest {
 
         MoveApplier.undo(position, state);
 
-        assertEquals(Bitboard.E3, position.epSq);
+        assertEquals(Position.E3, position.epSq);
     }
 
     @Test
@@ -372,7 +372,7 @@ class MoveApplierTest {
 
         MoveApplier.undo(position, state);
 
-        assertEquals(Bitboard.D6, position.epSq);
+        assertEquals(Position.D6, position.epSq);
     }
 
     @Test

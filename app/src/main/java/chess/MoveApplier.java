@@ -148,15 +148,15 @@ public class MoveApplier {
         // Update castling rights
 
         if (piece == Position.WHITE_ROOK) {
-            if (from == Bitboard.H1) {
+            if (from == Position.H1) {
                 position.setCastlingRights(true, true, false);
-            } else if (from == Bitboard.A1) {
+            } else if (from == Position.A1) {
                 position.setCastlingRights(false, true, false);
             }
         } else if (piece == Position.BLACK_ROOK) {
-            if (from == Bitboard.H8) {
+            if (from == Position.H8) {
                 position.setCastlingRights(true, false, false);
-            } else if (from == Bitboard.A8) {
+            } else if (from == Position.A8) {
                 position.setCastlingRights(false, false, false);
             }
         }
@@ -233,11 +233,11 @@ public class MoveApplier {
         int king = w ? Position.WHITE_KING : Position.BLACK_KING;
         int rook = w ? Position.WHITE_ROOK : Position.BLACK_ROOK;
 
-        int kingFrom = w ? Bitboard.E1 : Bitboard.E8;
-        int kingTo   = w ? Bitboard.G1 : Bitboard.G8;
+        int kingFrom = w ? Position.E1 : Position.E8;
+        int kingTo   = w ? Position.G1 : Position.G8;
 
-        int rookFrom = w ? Bitboard.H1 : Bitboard.H8;
-        int rookTo   = w ? Bitboard.F1 : Bitboard.F8;
+        int rookFrom = w ? Position.H1 : Position.H8;
+        int rookTo   = w ? Position.F1 : Position.F8;
 
         position.bitboards[king] &= ~(1L << kingFrom);
         position.bitboards[king] |=  (1L << kingTo);
@@ -253,11 +253,11 @@ public class MoveApplier {
         int king = w ? Position.WHITE_KING : Position.BLACK_KING;
         int rook = w ? Position.WHITE_ROOK : Position.BLACK_ROOK;
 
-        int kingFrom = w ? Bitboard.E1 : Bitboard.E8;
-        int kingTo   = w ? Bitboard.C1 : Bitboard.C8;
+        int kingFrom = w ? Position.E1 : Position.E8;
+        int kingTo   = w ? Position.C1 : Position.C8;
 
-        int rookFrom = w ? Bitboard.A1 : Bitboard.A8;
-        int rookTo   = w ? Bitboard.D1 : Bitboard.D8;
+        int rookFrom = w ? Position.A1 : Position.A8;
+        int rookTo   = w ? Position.D1 : Position.D8;
 
         position.bitboards[king] &= ~(1L << kingFrom);
         position.bitboards[king] |=  (1L << kingTo);
@@ -271,15 +271,15 @@ public class MoveApplier {
 
     private static void updateCastlingRightsAfterCapture(Position position, int capturedPiece, int square) {
         if (capturedPiece == Position.WHITE_ROOK) {
-            if (square == Bitboard.H1) {
+            if (square == Position.H1) {
                 position.setCastlingRights(true, true, false);
-            } else if (square == Bitboard.A1) {
+            } else if (square == Position.A1) {
                 position.setCastlingRights(false, true, false);
             }
         } else if (capturedPiece == Position.BLACK_ROOK) {
-            if (square == Bitboard.H8) {
+            if (square == Position.H8) {
                 position.setCastlingRights(true, false, false);
-            } else if (square == Bitboard.A8) {
+            } else if (square == Position.A8) {
                 position.setCastlingRights(false, false, false);
             }
         }
@@ -340,11 +340,11 @@ public class MoveApplier {
         int king = white ? Position.WHITE_KING : Position.BLACK_KING;
         int rook = white ? Position.WHITE_ROOK : Position.BLACK_ROOK;
 
-        int kingFrom = white ? Bitboard.E1 : Bitboard.E8;
-        int kingTo   = white ? Bitboard.G1 : Bitboard.G8;
+        int kingFrom = white ? Position.E1 : Position.E8;
+        int kingTo   = white ? Position.G1 : Position.G8;
 
-        int rookFrom = white ? Bitboard.H1 : Bitboard.H8;
-        int rookTo   = white ? Bitboard.F1 : Bitboard.F8;
+        int rookFrom = white ? Position.H1 : Position.H8;
+        int rookTo   = white ? Position.F1 : Position.F8;
 
         position.bitboards[king] &= ~(1L << kingTo);
         position.bitboards[king] |= 1L << kingFrom;
@@ -357,11 +357,11 @@ public class MoveApplier {
         int king = white ? Position.WHITE_KING : Position.BLACK_KING;
         int rook = white ? Position.WHITE_ROOK : Position.BLACK_ROOK;
 
-        int kingFrom = white ? Bitboard.E1 : Bitboard.E8;
-        int kingTo   = white ? Bitboard.C1 : Bitboard.C8;
+        int kingFrom = white ? Position.E1 : Position.E8;
+        int kingTo   = white ? Position.C1 : Position.C8;
 
-        int rookFrom = white ? Bitboard.A1 : Bitboard.A8;
-        int rookTo   = white ? Bitboard.D1 : Bitboard.D8;
+        int rookFrom = white ? Position.A1 : Position.A8;
+        int rookTo   = white ? Position.D1 : Position.D8;
 
         position.bitboards[king] &= ~(1L << kingTo);
         position.bitboards[king] |= 1L << kingFrom;

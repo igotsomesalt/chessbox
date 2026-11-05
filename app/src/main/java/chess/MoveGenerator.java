@@ -162,7 +162,7 @@ public final class MoveGenerator {
     private static void generateCastlingMoves(Position position, MoveList moves, boolean white) {
         int king = white ? Position.WHITE_KING : Position.BLACK_KING;
 
-        int kingSquare = white ? Bitboard.E1 : Bitboard.E8;
+        int kingSquare = white ? Position.E1 : Position.E8;
 
         // King must be on its original square.
         if ((position.bitboards[king] & (1L << kingSquare)) == 0) return;
@@ -172,8 +172,8 @@ public final class MoveGenerator {
 
         // kingside
         if (position.getCastlingRights(true, white)) {
-            int f = white ? Bitboard.F1 : Bitboard.F8;
-            int g = white ? Bitboard.G1 : Bitboard.G8;
+            int f = white ? Position.F1 : Position.F8;
+            int g = white ? Position.G1 : Position.G8;
 
             if (position.isEmpty(f)
                     && position.isEmpty(g)
@@ -186,9 +186,9 @@ public final class MoveGenerator {
 
         // queenside
         if (position.getCastlingRights(false, white)) {
-            int b = white ? Bitboard.B1 : Bitboard.B8;
-            int c = white ? Bitboard.C1 : Bitboard.C8;
-            int d = white ? Bitboard.D1 : Bitboard.D8;
+            int b = white ? Position.B1 : Position.B8;
+            int c = white ? Position.C1 : Position.C8;
+            int d = white ? Position.D1 : Position.D8;
 
             if (position.isEmpty(b)
                     && position.isEmpty(c)

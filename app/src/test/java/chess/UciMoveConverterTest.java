@@ -34,8 +34,8 @@ class UciMoveConverterTest {
     @Test
     void toNotation_handlesPromotion() {
         int move = Move.encode(
-            Bitboard.A7,
-            Bitboard.A8,
+            Position.A7,
+            Position.A8,
             Position.WHITE_PAWN,
             Position.NO_PIECE,
             Position.WHITE_QUEEN,
@@ -49,8 +49,8 @@ class UciMoveConverterTest {
     @Test
     void toNotation_handlesKnightPromotion() {
         int move = Move.encode(
-            Bitboard.A7,
-            Bitboard.A8,
+            Position.A7,
+            Position.A8,
             Position.WHITE_PAWN,
             Position.NO_PIECE,
             Position.WHITE_KNIGHT,
@@ -64,8 +64,8 @@ class UciMoveConverterTest {
     @Test
     void toNotation_handlesBishopPromotion() {
         int move = Move.encode(
-            Bitboard.A7,
-            Bitboard.B8,
+            Position.A7,
+            Position.B8,
             Position.WHITE_PAWN,
             Position.NO_PIECE,
             Position.WHITE_BISHOP,
@@ -79,8 +79,8 @@ class UciMoveConverterTest {
     @Test
     void toNotation_handlesRookPromotion() {
         int move = Move.encode(
-            Bitboard.A7,
-            Bitboard.A8,
+            Position.A7,
+            Position.A8,
             Position.WHITE_PAWN,
             Position.NO_PIECE,
             Position.WHITE_ROOK,
@@ -94,8 +94,8 @@ class UciMoveConverterTest {
     @Test
     void toNotation_handlesBlackPromotion() {
         int move = Move.encode(
-            Bitboard.A2,
-            Bitboard.A1,
+            Position.A2,
+            Position.A1,
             Position.BLACK_PAWN,
             Position.NO_PIECE,
             Position.BLACK_QUEEN,
@@ -109,8 +109,8 @@ class UciMoveConverterTest {
     @Test
     void toNotation_moveOverload() {
         int encoded = Move.encode(
-            Bitboard.E2,
-            Bitboard.E4,
+            Position.E2,
+            Position.E4,
             Position.WHITE_PAWN,
             Position.NO_PIECE,
             Position.NO_PIECE,
@@ -129,8 +129,8 @@ class UciMoveConverterTest {
 
         int move = UciMoveConverter.toMoveInt("e2e4", position);
 
-        assertEquals(Bitboard.E2, Move.getSq1(move));
-        assertEquals(Bitboard.E4, Move.getSq2(move));
+        assertEquals(Position.E2, Move.getSq1(move));
+        assertEquals(Position.E4, Move.getSq2(move));
         assertEquals(Position.WHITE_PAWN, Move.getPiece(move));
         assertEquals(Position.NO_PIECE, Move.getCapPiece(move));
         assertEquals(Position.NO_PIECE, Move.getPromPiece(move));
@@ -142,8 +142,8 @@ class UciMoveConverterTest {
 
         int move = UciMoveConverter.toMoveInt("g1f3", position);
 
-        assertEquals(Bitboard.G1, Move.getSq1(move));
-        assertEquals(Bitboard.F3, Move.getSq2(move));
+        assertEquals(Position.G1, Move.getSq1(move));
+        assertEquals(Position.F3, Move.getSq2(move));
         assertEquals(Position.WHITE_KNIGHT, Move.getPiece(move));
         assertEquals(Position.NO_PIECE, Move.getCapPiece(move));
         assertEquals(Position.NO_PIECE, Move.getPromPiece(move));
@@ -164,8 +164,8 @@ class UciMoveConverterTest {
 
         int move = UciMoveConverter.toMoveInt("e4d5", position);
 
-        assertEquals(Bitboard.E4, Move.getSq1(move));
-        assertEquals(Bitboard.D5, Move.getSq2(move));
+        assertEquals(Position.E4, Move.getSq1(move));
+        assertEquals(Position.D5, Move.getSq2(move));
         assertEquals(Position.WHITE_PAWN, Move.getPiece(move));
         assertEquals(Position.BLACK_PAWN, Move.getCapPiece(move));
     }
@@ -188,8 +188,8 @@ class UciMoveConverterTest {
 
         int move = UciMoveConverter.toMoveInt(uci, position);
 
-        assertEquals(Bitboard.A7, Move.getSq1(move));
-        assertEquals(Bitboard.A8, Move.getSq2(move));
+        assertEquals(Position.A7, Move.getSq1(move));
+        assertEquals(Position.A8, Move.getSq2(move));
         assertEquals(Position.WHITE_PAWN, Move.getPiece(move));
         assertEquals(expectedPiece, Move.getPromPiece(move));
     }
@@ -208,8 +208,8 @@ class UciMoveConverterTest {
 
         int move = UciMoveConverter.toMoveInt(uci, position);
 
-        assertEquals(Bitboard.A2, Move.getSq1(move));
-        assertEquals(Bitboard.A1, Move.getSq2(move));
+        assertEquals(Position.A2, Move.getSq1(move));
+        assertEquals(Position.A1, Move.getSq2(move));
         assertEquals(Position.BLACK_PAWN, Move.getPiece(move));
         assertEquals(expectedPiece, Move.getPromPiece(move));
     }
@@ -222,8 +222,8 @@ class UciMoveConverterTest {
 
         Move move = UciMoveConverter.toMove("a7a8q", position);
 
-        assertEquals(Bitboard.A7, Move.getSq1(move.encoded));
-        assertEquals(Bitboard.A8, Move.getSq2(move.encoded));
+        assertEquals(Position.A7, Move.getSq1(move.encoded));
+        assertEquals(Position.A8, Move.getSq2(move.encoded));
         assertEquals(
             Position.WHITE_QUEEN,
             Move.getPromPiece(move.encoded)
@@ -274,8 +274,8 @@ class UciMoveConverterTest {
 
         int move = UciMoveConverter.toMoveInt("e5d6", position);
 
-        assertEquals(Bitboard.E5, Move.getSq1(move));
-        assertEquals(Bitboard.D6, Move.getSq2(move));
+        assertEquals(Position.E5, Move.getSq1(move));
+        assertEquals(Position.D6, Move.getSq2(move));
         assertEquals(Position.WHITE_PAWN, Move.getPiece(move));
         assertEquals(Position.NO_PIECE, Move.getCapPiece(move));
         assertTrue(Move.getEP(move) == 1);
@@ -289,8 +289,8 @@ class UciMoveConverterTest {
 
         int move = UciMoveConverter.toMoveInt("e4d3", position);
 
-        assertEquals(Bitboard.E4, Move.getSq1(move));
-        assertEquals(Bitboard.D3, Move.getSq2(move));
+        assertEquals(Position.E4, Move.getSq1(move));
+        assertEquals(Position.D3, Move.getSq2(move));
         assertEquals(Position.BLACK_PAWN, Move.getPiece(move));
         assertEquals(Position.NO_PIECE, Move.getCapPiece(move));
         assertTrue(Move.getEP(move) == 1);

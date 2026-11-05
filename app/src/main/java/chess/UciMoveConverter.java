@@ -138,21 +138,21 @@ public class UciMoveConverter {
 
     private static int getCastleType(int piece, int from, int to) {
         if (piece == Position.WHITE_KING) {
-            if (from == Bitboard.E1 && to == Bitboard.G1) {
+            if (from == Position.E1 && to == Position.G1) {
                 return 1;
             }
 
-            if (from == Bitboard.E1 && to == Bitboard.C1) {
+            if (from == Position.E1 && to == Position.C1) {
                 return 2;
             }
         }
 
         if (piece == Position.BLACK_KING) {
-            if (from == Bitboard.E8 && to == Bitboard.G8) {
+            if (from == Position.E8 && to == Position.G8) {
                 return 1;
             }
 
-            if (from == Bitboard.E8 && to == Bitboard.C8) {
+            if (from == Position.E8 && to == Position.C8) {
                 return 2;
             }
         }
