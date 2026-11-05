@@ -13,19 +13,16 @@ import java.util.concurrent.Future;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import chess.Position;
 import game.Game.Result;
 
 public class GameService {
 
-    private Position position;
     private final Map<Boolean, Supplier<Player>> playerFactories = new HashMap<>();
     private final List<Consumer<String>> logListeners  = new ArrayList<>();
 
     private List<Game> games = new ArrayList<>();
 
     public GameService() {
-        this.position = new Position();
     }
 
     public void registerPlayerFactory(Supplier<Player> factory, boolean white) {
@@ -36,7 +33,7 @@ public class GameService {
         logListeners.add(listener);
     }
 
-    public void start(int numGames, int numThreads, boolean verbose) {
+    public void start(int numGames, int numThreads, OpeningBook openingBook, boolean verbose) {
         if (numGames < 1) {
             sendMessage(String.format("Number of games must be positive, instead got %d", numGames));
             return;
@@ -63,7 +60,7 @@ public class GameService {
         for (int i = 0; i < numGames; i++) {
 
             Game game = new Game(
-                new Position(position),
+                openingBook.nextPosition(),
                 playerFactories.get(true).get(),
                 playerFactories.get(false).get()
             );

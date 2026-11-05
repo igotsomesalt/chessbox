@@ -36,7 +36,6 @@ public class FenOpeningBook implements OpeningBook {
             throw new IllegalArgumentException("Empty opening book");
         }
     }
-}
 
     @Override
     public Position nextPosition() throws IllegalArgumentException {
