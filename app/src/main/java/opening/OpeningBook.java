@@ -1,4 +1,4 @@
-package game;
+package opening;
 
 import chess.Position;
 
