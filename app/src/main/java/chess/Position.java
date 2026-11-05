@@ -143,6 +143,8 @@ public class Position {
     public int halfMoveClock;
     public int fullMoveClock;
 
+    public long zobristHash;
+
     public static final long[] DEFAULT_BITBOARDS = {
         0x000000000000ff00L, // w pawns
         0x0000000000000042L, // w knights
@@ -187,6 +189,7 @@ public class Position {
         this.whiteToMove = whiteToMove;
         this.halfMoveClock = halfMoveClock;
         this.fullMoveClock = fullMoveClock;
+        this.zobristHash = Zobrist.compute(this);
 
         this.pieceAt = new int[64];
         initializePieceAt();
