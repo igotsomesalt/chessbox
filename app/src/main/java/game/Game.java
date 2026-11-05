@@ -43,6 +43,7 @@ public class Game implements Callable<Game.Result> {
 
     private final List<String> moves;
     private final String startingFen;
+    private final Map<Long, Integer> repetitions;
 
     private volatile boolean running = true;
 
@@ -52,6 +53,7 @@ public class Game implements Callable<Game.Result> {
         this.black = black;
         this.moves = new ArrayList<>();
         this.startingFen = startingPosition.toFen();
+        this.repetitions = new HashMap<>();
     }
 
     public void stop() {
@@ -98,6 +100,16 @@ public class Game implements Callable<Game.Result> {
                     Duration.ofNanos(System.nanoTime() - startNanos)
                 );
             }
+
+                int count = repetitions.merge(position.zobristHash, 1, (a, b) -> a + b);
+
+                if (count >= 3) {
+                    return new Result(
+                        Outcome.DRAW, Termination.REPETITION, 
+                        moves, startingFen, position.toFen(), startedAt, 
+                        Duration.ofNanos(System.nanoTime() - startNanos)
+                    );
+                }
         }
 
         return new Result(
