@@ -80,7 +80,7 @@ public class GameService {
                 ));
 
             } catch (ExecutionException e) {
-                sendMessage("Game failed: " + e.getCause());
+                sendMessage("Game failed: " + e.getCause() + "\n");
 
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
