@@ -13,7 +13,8 @@ import java.util.concurrent.Future;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import game.Game.Result;
+import game.Game.Outcome;
+import opening.OpeningBook;
 
 public class GameService {
 
