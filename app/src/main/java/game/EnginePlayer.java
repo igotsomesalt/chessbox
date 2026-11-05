@@ -2,14 +2,15 @@ package game;
 
 import chess.Fen;
 import chess.Position;
+import engine.EngineConfig;
 import engine.UciEngine;
 
 public class EnginePlayer implements Player, AutoCloseable {
 
     private final UciEngine engine;
 
-    public EnginePlayer(String executable) throws Exception {
-        engine = new UciEngine(executable);
+    public EnginePlayer(EngineConfig config) throws Exception {
+        engine = new UciEngine(config);
         engine.initialize();
     }
 

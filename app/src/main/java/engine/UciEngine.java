@@ -2,19 +2,22 @@ package engine;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.Map.Entry;
 
 public class UciEngine implements AutoCloseable {
 
     private final Process process;
     private final BufferedReader reader;
     private final BufferedWriter writer;
+    private final EngineConfig config;
 
-    public UciEngine(String executable) throws IOException {
-        ProcessBuilder builder = new ProcessBuilder(executable);
+    public UciEngine(EngineConfig config) throws IOException {
+        this.config = config;
+        ProcessBuilder builder = new ProcessBuilder(config.executable().toString());
 
         builder.redirectError(ProcessBuilder.Redirect.INHERIT);
 
-        process = builder.start();
+        process = builder.start();  
 
         reader = new BufferedReader(
             new InputStreamReader(
@@ -52,6 +55,10 @@ public class UciEngine implements AutoCloseable {
     public void initialize() throws IOException {
         send("uci");
         readUntil("uciok");
+
+        for (Entry<String, String> option : config.options().entrySet()) {
+            send(String.format("setoption name %s value %s", option.getKey(), option.getValue()));
+        }
 
         send("isready");
         readUntil("readyok");
