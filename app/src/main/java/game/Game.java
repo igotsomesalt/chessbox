@@ -12,7 +12,7 @@ import chess.UciMoveConverter;
 public class Game implements Callable<Game.Result> {
 
     public static record Result(
-        Outcome outcome, Termination termination, List<String> moves, String fen, 
+        Outcome outcome, Termination termination, List<String> moves, String startingFen, String endingFen, 
         Instant startedAt, Duration duration
     ) {} 
 
@@ -40,6 +40,7 @@ public class Game implements Callable<Game.Result> {
     private final Player black;
 
     private final List<String> moves;
+    private final String startingFen;
 
     private volatile boolean running = true;
 
@@ -48,11 +49,11 @@ public class Game implements Callable<Game.Result> {
         Player white,
         Player black
     ) {
-
-        this.position = new Position(startingPosition);
+        this.position = startingPosition;
         this.white = white;
         this.black = black;
         this.moves = new ArrayList<>();
+        this.startingFen = startingPosition.toFen();
     }
 
     public void stop() {
@@ -80,14 +81,14 @@ public class Game implements Callable<Game.Result> {
             if (position.isInCheckmate()) {
                 return new Result(
                     position.whiteToMove ? Outcome.BLACK_WIN : Outcome.WHITE_WIN, Termination.CHECKMATE,
-                    moves, position.toFen(), startedAt, 
+                    moves, startingFen, position.toFen(), startedAt, 
                     Duration.ofNanos(System.nanoTime() - startNanos)
                 );
             }
             if (position.isInStalemate()) {
                 return new Result(
                     Outcome.DRAW, Termination.STALEMATE,
-                    moves, position.toFen(), startedAt, 
+                    moves, startingFen, position.toFen(), startedAt, 
                     Duration.ofNanos(System.nanoTime() - startNanos)
                 );
             }
@@ -95,7 +96,7 @@ public class Game implements Callable<Game.Result> {
 
         return new Result(
             Outcome.DRAW, Termination.CHECKMATE,
-            moves, position.toFen(), startedAt, 
+            moves, startingFen, position.toFen(), startedAt, 
             Duration.ofNanos(System.currentTimeMillis() - startNanos)
         );
     }
