@@ -28,4 +28,8 @@ public class EnginePlayer implements Player, AutoCloseable {
     public void close() throws Exception {
         engine.close();
     }
+
+    public EngineConfig getConfig() {
+        return engine.getConfig();
+    }
 }
