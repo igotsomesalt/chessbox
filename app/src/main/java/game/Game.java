@@ -3,7 +3,9 @@ package game;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
 import chess.Position;
@@ -44,11 +46,7 @@ public class Game implements Callable<Game.Result> {
 
     private volatile boolean running = true;
 
-    public Game(
-        Position startingPosition,
-        Player white,
-        Player black
-    ) {
+    public Game(Position startingPosition, Player white, Player black) {
         this.position = startingPosition;
         this.white = white;
         this.black = black;
@@ -61,18 +59,26 @@ public class Game implements Callable<Game.Result> {
     }
 
     @Override
-    public Game.Result call() throws Exception {
+    public Game.Result call() throws GameRuntimeException {
         Instant startedAt = Instant.now();
         long startNanos = System.nanoTime();
 
         while (running && !Thread.currentThread().isInterrupted()) {
 
             Player player = position.whiteToMove ? white : black;
-            String uci = player.getMove(position);
+            String uci;
+
+            try {
+                uci = player.getMove(position);
+            }
+            catch(Exception e) {
+                throw new GameRuntimeException(this, e);
+            }
+
             int move = UciMoveConverter.toMoveInt(uci, position);
 
             if (!position.isMoveLegal(move)) {
-                throw new IllegalMoveException(uci);
+                throw new GameRuntimeException(this, new IllegalMoveException(uci));
             }
 
             position.makeMove(move);
@@ -95,9 +101,21 @@ public class Game implements Callable<Game.Result> {
         }
 
         return new Result(
-            Outcome.DRAW, Termination.CHECKMATE,
+            Outcome.DRAW, Termination.STOPPED,
             moves, startingFen, position.toFen(), startedAt, 
             Duration.ofNanos(System.currentTimeMillis() - startNanos)
         );
+    }
+
+    public String getFen() {
+        return position.toFen();
+    }
+
+    public String getStartFen() {
+        return startingFen;
+    }
+
+    public List<String> getMoves() {
+        return moves;
     }
 }
