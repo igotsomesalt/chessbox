@@ -13,12 +13,14 @@ public class GameTest {
 
     @Test 
     void play10games4threads() {
-        EngineConfig config = new EngineConfig(1, "Stockfish", Path.of("../engines/stockfish.exe"));
+        EngineConfig config1 = new EngineConfig(0, "Stockfish", Path.of("../engines/stockfish.exe"));
+        EngineConfig config2 = new EngineConfig(1, "Stockfish", Path.of("../engines/stockfish.exe"));
         GameService game = new GameService();
         OpeningBook openingBook;
 
         try {
-            openingBook = new FenOpeningBook(getClass().getResourceAsStream("/openings/4mvs_+90_+99.epd"));
+            String path = "/openings/4mvs_+90_+99.epd";
+            openingBook = new FenOpeningBook(path, getClass().getResourceAsStream(path));
         }
         catch (IOException e) {
             System.out.println(e.getMessage());
@@ -30,6 +32,7 @@ public class GameTest {
         });
 
         for (int i = 0; i < 2; i++) {
+            EngineConfig config = i == 0 ? config1 : config2;
             game.registerPlayerFactory(() -> {
                 try {
                     return new EnginePlayer(config);
