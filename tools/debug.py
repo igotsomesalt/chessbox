@@ -204,7 +204,7 @@ def print_move(value: int):
     print()
 
 
-def print_bitboard(value: int, coordinates: bool = True):
+def print_bitboard(value: int = 0, coordinates: bool = True, index: bool = False):
     """
     Print a 64-bit bitboard.
 
@@ -221,10 +221,13 @@ def print_bitboard(value: int, coordinates: bool = True):
     print(f"Hex:     0x{bb:016X}")
     print()
 
-    if coordinates:
-        print("    a b c d e f g h")
+    files = "    a  b  c  d  e  f  g  h" if index else "    a b c d e f g h"
+    line = f"  +{'--------' if index else ''}-----------------+"
 
-    print("  +-----------------+")
+    if coordinates:
+        print(files)
+
+    print(line)
 
     # Rank 8 -> rank 1
     for rank in range(7, -1, -1):
@@ -233,14 +236,14 @@ def print_bitboard(value: int, coordinates: bool = True):
         for file in range(8):
             square = rank * 8 + file
             bit = (bb >> square) & 1
-            row.append("1" if bit else ".")
+            row.append(str(square) + f"{' ' if square < 10 else ''}" if index else ("1" if bit else "."))
 
         print(f"{rank + 1} | {' '.join(row)} |")
 
-    print("  +-----------------+")
+    print(line)
 
     if coordinates:
-        print("    a b c d e f g h")
+        print(files)
 
     print()
 
@@ -348,14 +351,24 @@ def command_sq(args):
 def command_fen(args):
     print_fen(args.value)
 
+
 def command_move(args):
     value = parse_int(args.value)
     print_move(value)
 
 
-def command_bb(args):
-    value = parse_int(args.value)
-    print_bitboard(value)
+def command_bb(args):    
+    index = False
+    try:
+        value = parse_int(args.value)
+    except ValueError:
+        value = args.value
+        if value != "index":
+            return
+        value = 0
+        index = True
+
+    print_bitboard(value=value, index=index)
 
 
 def command_bits(args):
