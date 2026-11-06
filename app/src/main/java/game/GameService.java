@@ -14,6 +14,7 @@ import java.util.concurrent.Future;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import chess.Position;
 import opening.OpeningBook;
 
 public class GameService {
@@ -64,20 +65,27 @@ public class GameService {
 
         ConcurrentHashMap<String, Integer> outcomes = new ConcurrentHashMap<>();
 
-        long startNanos = System.nanoTime();
-
         for (int i = 0; i < numGames; i++) {
             boolean swap = i % 2 == 0;
-            
-            Game game = new Game(
-                openingBook.nextPosition(),
-                playerFactories.get(swap).get(),
-                playerFactories.get(!swap).get()
-            );
 
-            games.add(game);
-            completionService.submit(game);
+            Position position = openingBook.nextPosition();
+
+            Supplier<Player> whiteFactory = playerFactories.get(swap);
+            Supplier<Player> blackFactory = playerFactories.get(!swap);
+
+            completionService.submit(() -> {
+                Game game = new Game(
+                    position,
+                    whiteFactory.get(),
+                    blackFactory.get()
+                );
+
+                return game.call();
+            });
         }
+
+        sendMessage("All games submitted at " + Instant.now() + "\n");
+        long startNanos = System.nanoTime();
 
         for (int i = 0; i < numGames; i++) {
             try {
@@ -105,7 +113,7 @@ public class GameService {
                     int percent = completed * 100 / numGames;
 
                     sendMessage(String.format(
-                        "\rProgress: [%3d%%] (%d/%d games)\n",
+                        "\rProgress: [%3d%%] (%d/%d games)",
                         percent, completed, numGames
                     ));
                 }
@@ -121,6 +129,7 @@ public class GameService {
 
         Duration totalDuration = Duration.ofNanos(System.nanoTime() - startNanos);
 
+        sendMessage("\n");
         sendMessage(formatResult(new Result(
             numGames, numThreads, outcomes, totalDuration, openingBook
         )));
