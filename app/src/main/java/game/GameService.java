@@ -92,11 +92,13 @@ public class GameService {
 
                 outcomes.merge(name, 1, Integer::sum);
 
-                sendMessage(String.format(
-                    "Game finished:\n%s\n",
-                    formatGameResult(result, verbose)
-                ));
-
+                if (verbose) {
+                    sendMessage(String.format(
+                        "Game finished:\n%s\n",
+                        formatGameResult(result)
+                    ));
+                }
+                
             } catch (ExecutionException e) {
                 sendMessage("Game failed: " + e.getCause() + "\n");
 
@@ -125,13 +127,11 @@ public class GameService {
         }
     }
 
-    private String formatGameResult(Game.Result result, boolean verbose) {
+    private String formatGameResult(Game.Result result) {
         return String.format(
-            "outcome = %s\ntermination = %s\n%s%s%sdate = %s\nduration = %d ms", 
-            result.outcome().toString(), result.termination().toString(),
-            verbose ? "moves = " + result.moves().toString() + "\n" : "",
-            verbose ? "starting_fen = " + result.startingFen() + "\n" : "",
-            verbose ? "ending_fen = " + result.endingFen() + "\n" : "",
+            "outcome = %s\ntermination = %s\nmoves = %s\nstarting_fen = %s\nending_fen = %s\ndate = %s\nduration = %d ms", 
+            result.outcome().toString(), result.termination().toString(), result.moves().toString(),
+            result.startingFen(),result.endingFen(),
             result.startedAt().toString(), result.duration().toMillis()
         );
     }
