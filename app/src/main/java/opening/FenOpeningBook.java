@@ -18,12 +18,13 @@ public class FenOpeningBook implements OpeningBook {
     private final List<String> fens;
     private final Random random = new Random();
     private final Set<String> seen = new HashSet<>();
+    private String source;
 
     public FenOpeningBook(Path path) throws IOException {
-        this(Files.newInputStream(path));
+        this(path.toString(), Files.newInputStream(path));
     }
 
-    public FenOpeningBook(InputStream stream) throws IOException {
+    public FenOpeningBook(String source, InputStream stream) throws IOException {
         try (BufferedReader reader = new BufferedReader(
                 new InputStreamReader(stream, StandardCharsets.UTF_8))) {
 
@@ -35,6 +36,8 @@ public class FenOpeningBook implements OpeningBook {
         if (fens.isEmpty()) {
             throw new IllegalArgumentException("Empty opening book");
         }
+
+        this.source = source;
     }
 
     @Override
@@ -48,5 +51,10 @@ public class FenOpeningBook implements OpeningBook {
 
         seen.add(fen);
         return new Position(fen);
+    }
+
+    @Override 
+    public String toString() {
+        return source;
     }
 }
