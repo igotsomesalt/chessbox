@@ -12,23 +12,34 @@ import opening.OpeningBook;
 public class GameTest {
 
     @Test 
-    void play10games4threads() {
-        EngineConfig config1 = new EngineConfig(0, "Stockfish", Path.of("../engines/stockfish.exe"));
-        EngineConfig config2 = new EngineConfig(1, "Stockfish", Path.of("../engines/stockfish.exe"));
+    void play10games4threadsVerboseFalse() {
         GameService game = new GameService();
+        OpeningBook openingBook = getOpeningBook("/openings/4mvs_+90_+99.epd");
+        register2stockfishs(game);
+        game.start(10, 4, openingBook, false);
+    }
+
+    private OpeningBook getOpeningBook(String path) {
         OpeningBook openingBook;
 
         try {
-            String path = "/openings/4mvs_+90_+99.epd";
             openingBook = new FenOpeningBook(path, getClass().getResourceAsStream(path));
         }
         catch (IOException e) {
             System.out.println(e.getMessage());
-            return;
+            return null;
         }
+
+        return openingBook;
+    }
+
+    private void register2stockfishs(GameService game) {
+        EngineConfig config1 = new EngineConfig(0, "Stockfish", Path.of("../engines/stockfish.exe"));
+        EngineConfig config2 = new EngineConfig(1, "Stockfish", Path.of("../engines/stockfish.exe"));
 
         game.registerLogListener(message -> {
             System.out.println(message);
+            System.out.flush();
         });
 
         for (int i = 0; i < 2; i++) {
@@ -41,7 +52,5 @@ public class GameTest {
                 }
             }, i == 0);
         }
-
-        game.start(10, 4, openingBook, true);
     }
 }
