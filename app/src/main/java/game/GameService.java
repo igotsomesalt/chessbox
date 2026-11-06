@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.Executors;
@@ -13,10 +14,14 @@ import java.util.concurrent.Future;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import game.Game.Outcome;
 import opening.OpeningBook;
 
 public class GameService {
+
+    public static record Result(
+        int games, int threads, Map<String, Integer> outcomes, 
+        Duration duration, OpeningBook openingBook
+    ) {}
 
     private final Map<Boolean, Supplier<Player>> playerFactories = new HashMap<>();
     private final List<Consumer<String>> logListeners  = new ArrayList<>();
@@ -34,6 +39,7 @@ public class GameService {
         logListeners.add(listener);
     }
 
+    @SuppressWarnings("null")
     public void start(int numGames, int numThreads, OpeningBook openingBook, boolean verbose) {
         if (numGames < 1) {
             sendMessage(String.format("Number of games must be positive, instead got %d", numGames));
@@ -52,9 +58,11 @@ public class GameService {
 
         sendMessage(String.format("Starting %d games on %d worker threads", numGames, numThreads));
 
-        ExecutorCompletionService<Result> completionService = new ExecutorCompletionService<>(
+        ExecutorCompletionService<Game.Result> completionService = new ExecutorCompletionService<>(
             Executors.newFixedThreadPool(numThreads)
         );
+
+        ConcurrentHashMap<String, Integer> outcomes = new ConcurrentHashMap<>();
 
         long startNanos = System.nanoTime();
 
@@ -72,12 +80,21 @@ public class GameService {
 
         for (int i = 0; i < numGames; i++) {
             try {
-                Future<Result> future = completionService.take();
-                Result result = future.get();
+                Future<Game.Result> future = completionService.take();
+                Game.Result result = future.get();
+
+                Game.Outcome outcome = result.outcome();
+                String whiteName = String.format("%s(%d)", result.white().name(), result.white().id());
+                String blackName = String.format("%s(%d)", result.black().name(), result.black().id());
+
+                String name = outcome == Game.Outcome.DRAW ? "draw" : 
+                    (outcome == Game.Outcome.WHITE_WIN ? whiteName : blackName);
+
+                outcomes.merge(name, 1, Integer::sum);
 
                 sendMessage(String.format(
                     "Game finished:\n%s\n",
-                    formatResult(result, verbose)
+                    formatGameResult(result, verbose)
                 ));
 
             } catch (ExecutionException e) {
@@ -89,10 +106,11 @@ public class GameService {
             }
         }
 
-        sendMessage(String.format(
-            "Worker threads finished in %d ms at %s", 
-            Duration.ofNanos(System.nanoTime() - startNanos).toMillis(), Instant.now().toString()
-        ));
+        Duration totalDuration = Duration.ofNanos(System.nanoTime() - startNanos);
+
+        sendMessage(formatResult(new Result(
+            numGames, numThreads, outcomes, totalDuration, openingBook
+        )));
     }
 
     public void stop() {
@@ -107,14 +125,24 @@ public class GameService {
         }
     }
 
-    private String formatResult(Result result, boolean verbose) {
+    private String formatGameResult(Game.Result result, boolean verbose) {
         return String.format(
-            "outcome=%s\ntermination=%s\n%s%s%sdate=%s\nduration=%d ms", 
+            "outcome = %s\ntermination = %s\n%s%s%sdate = %s\nduration = %d ms", 
             result.outcome().toString(), result.termination().toString(),
-            verbose ? "moves=" + result.moves().toString() + "\n" : "",
-            verbose ? "starting_fen=" + result.startingFen() + "\n" : "",
-            verbose ? "ending_fen=" + result.endingFen() + "\n" : "",
+            verbose ? "moves = " + result.moves().toString() + "\n" : "",
+            verbose ? "starting_fen = " + result.startingFen() + "\n" : "",
+            verbose ? "ending_fen = " + result.endingFen() + "\n" : "",
             result.startedAt().toString(), result.duration().toMillis()
+        );
+    }
+
+    private String formatResult(Result result) {
+        return String.format(
+            "Worker threads finished in total elasped time of %d ms at %s\n\nopening_book = %s\n" +
+            "games = %d\nthreads = %d\noutcomes = %s\ntotal_games_duration = %d ms\nthroughput = %.1f games/s\n",
+            result.duration().toMillis(), Instant.now().toString(), result.openingBook().toString(),
+            result.games, result.threads, result.outcomes.toString(), result.duration().toMillis(), 
+            ((float)result.games) / result.duration().toSeconds()
         );
     }
 }
