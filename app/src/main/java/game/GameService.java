@@ -98,6 +98,16 @@ public class GameService {
                         formatGameResult(result)
                     ));
                 }
+
+                else {
+                    int completed = i + 1;
+                    int percent = completed * 100 / numGames;
+
+                    sendMessage(String.format(
+                        "\rProgress: [%3d%%] (%d/%d games)",
+                        percent, completed, numGames
+                    ));
+                }
                 
             } catch (ExecutionException e) {
                 sendMessage("Game failed: " + e.getCause() + "\n");
@@ -138,7 +148,7 @@ public class GameService {
 
     private String formatResult(Result result) {
         return String.format(
-            "Worker threads finished in total elasped time of %d ms at %s\n\nopening_book = %s\n" +
+            "\nWorker threads finished in total elasped time of %d ms at %s\n\nopening_book = %s\n" +
             "games = %d\nthreads = %d\noutcomes = %s\ntotal_games_duration = %d ms\nthroughput = %.1f games/s\n",
             result.duration().toMillis(), Instant.now().toString(), result.openingBook().toString(),
             result.games, result.threads, result.outcomes.toString(), result.duration().toMillis(), 
