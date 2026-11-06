@@ -70,7 +70,7 @@ public class GameTest {
         EngineConfig config2 = new EngineConfig(1, "Stockfish", Path.of("../engines/stockfish.exe"));
 
         game.registerLogListener(message -> {
-            System.out.println(message);
+            System.out.print(message);
             System.out.flush();
         });
 

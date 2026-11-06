@@ -42,21 +42,21 @@ public class GameService {
     @SuppressWarnings("null")
     public void start(int numGames, int numThreads, OpeningBook openingBook, boolean verbose) {
         if (numGames < 1) {
-            sendMessage(String.format("Number of games must be positive, instead got %d", numGames));
+            sendMessage(String.format("Number of games must be positive, instead got %d\n", numGames));
             return;
         }
 
         if (numThreads < 1) {
-            sendMessage(String.format("Number of threads must be positive, instead got %d", numThreads));
+            sendMessage(String.format("Number of threads must be positive, instead got %d\n", numThreads));
             return;
         }
 
         if (playerFactories.size() < 2) {
-            sendMessage(String.format("Number of players must be 2, instead found %s", playerFactories.size()));
+            sendMessage(String.format("Number of players must be 2, instead found %s\n", playerFactories.size()));
             return;
         }
 
-        sendMessage(String.format("Starting %d games on %d worker threads", numGames, numThreads));
+        sendMessage(String.format("Starting %d games on %d worker threads\n", numGames, numThreads));
 
         ExecutorCompletionService<Game.Result> completionService = new ExecutorCompletionService<>(
             Executors.newFixedThreadPool(numThreads)
@@ -105,7 +105,7 @@ public class GameService {
                     int percent = completed * 100 / numGames;
 
                     sendMessage(String.format(
-                        "\rProgress: [%3d%%] (%d/%d games)",
+                        "\rProgress: [%3d%%] (%d/%d games)\n",
                         percent, completed, numGames
                     ));
                 }
@@ -140,7 +140,7 @@ public class GameService {
 
     private String formatGameResult(Game.Result result) {
         return String.format(
-            "outcome = %s\ntermination = %s\nmoves = %s\nstarting_fen = %s\nending_fen = %s\ndate = %s\nduration = %d ms", 
+            "outcome = %s\ntermination = %s\nmoves = %s\nstarting_fen = %s\nending_fen = %s\ndate = %s\nduration = %d ms\n", 
             result.outcome().toString(), result.termination().toString(), result.moves().toString(),
             result.startingFen(),result.endingFen(),
             result.startedAt().toString(), result.duration().toMillis()
