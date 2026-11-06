@@ -59,6 +59,13 @@ public class UciMoveConverter {
         int castle = getCastleType(piece, from, to);
         boolean ep = isEnPassant(position, piece, from, to, capPiece);
 
+        if (ep) {
+            capPiece = piece == Position.WHITE_PAWN
+                ? Position.BLACK_PAWN
+                : Position.WHITE_PAWN;
+        }
+
+
         return Move.encode(
             from,
             to,
