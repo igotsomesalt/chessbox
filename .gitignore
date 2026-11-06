@@ -33,3 +33,5 @@ build
 .kotlin
 
 .env
+app/bin/
+.vscode/
