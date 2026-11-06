@@ -6,12 +6,14 @@ import java.nio.file.Path;
 import org.junit.jupiter.api.Test;
 
 import engine.EngineConfig;
+import opening.FenOpeningBook;
+import opening.OpeningBook;
 
 public class GameTest {
 
     @Test 
     void play10games4threads() {
-        EngineConfig config = new EngineConfig("1", "Stockfish", Path.of("../engines/stockfish.exe"));
+        EngineConfig config = new EngineConfig(1, "Stockfish", Path.of("../engines/stockfish.exe"));
         GameService game = new GameService();
         OpeningBook openingBook;
 

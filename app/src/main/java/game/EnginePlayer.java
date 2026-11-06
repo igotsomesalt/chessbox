@@ -24,6 +24,11 @@ public class EnginePlayer implements Player, AutoCloseable {
         return engine.getConfig().name();
     }
 
+    @Override 
+    public int id() {
+        return engine.getConfig().id();
+    }
+
     @Override
     public void close() throws Exception {
         engine.close();

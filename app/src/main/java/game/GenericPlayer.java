@@ -8,9 +8,11 @@ public class GenericPlayer implements Player {
 
     private Supplier<String> player;
     private String name;
+    private int id;
 
-    public GenericPlayer(String name, Supplier<String> player) {
+    public GenericPlayer(String name, int id, Supplier<String> player) {
         this.player = player;
+        this.id = id;
     }
 
     @Override
@@ -21,5 +23,10 @@ public class GenericPlayer implements Player {
     @Override 
     public String name() {
         return name;
+    }
+
+    @Override 
+    public int id() {
+        return id;
     }
 }

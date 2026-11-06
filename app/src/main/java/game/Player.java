@@ -7,4 +7,8 @@ public interface Player {
     default String name() {
         return "unkown";
     }
+
+    default int id() {
+        return 0;
+    }
 }
