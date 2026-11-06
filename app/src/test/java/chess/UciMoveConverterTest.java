@@ -429,4 +429,16 @@ class UciMoveConverterTest {
             )
         );
     }
+
+    @ParameterizedTest
+    @CsvSource({
+        "d5e6, 5k2/2R2p2/3p1bpp/3Pp3/1N1n2P1/r6P/P4PK1/3B4 w - e6 0 36",
+        "d5e6, rnbq1rk1/ppp2pbp/3p1np1/3Pp3/2P1P3/2N2NPP/PP3PB1/R1BQ1RK1 w - e6 0 11",
+        "a5b6, r4rk1/p1qbbpp1/2pp1nnp/Pp2p3/2PPP3/2N1BN1P/1PQ1BPP1/R2R2K1 w - b6 0 14"
+    })
+    void encounteredIssues(String move, String fen) {
+        Position position = new Position(fen);
+        int moveInt = UciMoveConverter.toMoveInt(move, position);
+        assert(position.isMoveLegal(moveInt));
+    }
 }
