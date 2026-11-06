@@ -19,6 +19,38 @@ public class GameTest {
         game.start(10, 4, openingBook, false);
     }
 
+    @Test
+    void play10games4threadVerboseTrue() {
+        GameService game = new GameService();
+        OpeningBook openingBook = getOpeningBook("/openings/4mvs_+90_+99.epd");
+        register2stockfishs(game);
+        game.start(10, 4, openingBook, true);
+    }
+
+    @Test
+    void play10games1threadVerboseFalse() {
+        GameService game = new GameService();
+        OpeningBook openingBook = getOpeningBook("/openings/4mvs_+90_+99.epd");
+        register2stockfishs(game);
+        game.start(10, 1, openingBook, false);
+    }
+
+    @Test 
+    void play100games4threadsVerboseFalse() {
+        GameService game = new GameService();
+        OpeningBook openingBook = getOpeningBook("/openings/4mvs_+90_+99.epd");
+        register2stockfishs(game);
+        game.start(100, 4, openingBook, false);
+    }
+
+    @Test 
+    void play100games1threadsVerboseFalse() {
+        GameService game = new GameService();
+        OpeningBook openingBook = getOpeningBook("/openings/4mvs_+90_+99.epd");
+        register2stockfishs(game);
+        game.start(100, 1, openingBook, false);
+    }
+
     private OpeningBook getOpeningBook(String path) {
         OpeningBook openingBook;
 

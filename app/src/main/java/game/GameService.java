@@ -67,11 +67,12 @@ public class GameService {
         long startNanos = System.nanoTime();
 
         for (int i = 0; i < numGames; i++) {
-
+            boolean swap = i % 2 == 0;
+            
             Game game = new Game(
                 openingBook.nextPosition(),
-                playerFactories.get(true).get(),
-                playerFactories.get(false).get()
+                playerFactories.get(swap).get(),
+                playerFactories.get(!swap).get()
             );
 
             games.add(game);
