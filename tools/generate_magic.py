@@ -1,0 +1,467 @@
+import random
+
+MASK64 = 0xFFFFFFFFFFFFFFFF
+
+ROOK = 0
+BISHOP = 1
+
+DIRECTIONS = {
+    ROOK: [
+        (1, 0),
+        (-1, 0),
+        (0, 1),
+        (0, -1),
+    ],
+    BISHOP: [
+        (1, 1),
+        (1, -1),
+        (-1, 1),
+        (-1, -1),
+    ],
+}
+
+
+def bit(square):
+    return 1 << square
+
+
+def square(file, rank):
+    return rank * 8 + file
+
+
+def on_board(file, rank):
+    return 0 <= file < 8 and 0 <= rank < 8
+
+
+def sliding_attacks(square_idx, occupancy, piece_type):
+    file = square_idx % 8
+    rank = square_idx // 8
+
+    attacks = 0
+
+    for df, dr in DIRECTIONS[piece_type]:
+        f = file + df
+        r = rank + dr
+
+        while on_board(f, r):
+            sq = square(f, r)
+            attacks |= bit(sq)
+
+            if occupancy & bit(sq):
+                break
+
+            f += df
+            r += dr
+
+    return attacks
+
+
+def relevant_mask(square_idx, piece_type):
+    """
+    Generate the magic relevant occupancy mask.
+
+    The final square of each ray is excluded because occupancy there
+    does not create a different attack set: it is always the final
+    square reached by that ray.
+    """
+    file = square_idx % 8
+    rank = square_idx // 8
+
+    mask = 0
+
+    for df, dr in DIRECTIONS[piece_type]:
+        f = file + df
+        r = rank + dr
+
+        while on_board(f, r):
+            next_f = f + df
+            next_r = r + dr
+
+            # Exclude the final square on each ray.
+            if not on_board(next_f, next_r):
+                break
+
+            mask |= bit(square(f, r))
+
+            f = next_f
+            r = next_r
+
+    return mask
+
+
+def generate_occupancies(mask):
+    """
+    Generate every subset of mask using the carry-rippler trick.
+    """
+    occupancies = []
+
+    subset = mask
+
+    while True:
+        occupancies.append(subset)
+
+        if subset == 0:
+            break
+
+        subset = (subset - 1) & mask
+
+    return occupancies
+
+
+def random_u64():
+    return random.getrandbits(64)
+
+
+def random_magic_candidate():
+    # Sparse random 64-bit candidate.
+    return (
+        random_u64()
+        & random_u64()
+        & random_u64()
+    )
+
+
+def find_magic(square_idx, piece_type, max_attempts=10_000_000):
+    mask = relevant_mask(square_idx, piece_type)
+
+    relevant_bits = mask.bit_count()
+    table_size = 1 << relevant_bits
+
+    occupancies = generate_occupancies(mask)
+
+    attacks = [
+        sliding_attacks(square_idx, occupancy, piece_type)
+        for occupancy in occupancies
+    ]
+
+    shift = 64 - relevant_bits
+
+    for _ in range(max_attempts):
+        magic = random_magic_candidate()
+
+        # Standard candidate heuristic.
+        if ((mask * magic) & 0xFF00000000000000).bit_count() < 6:
+            continue
+
+        used = [None] * table_size
+
+        valid = True
+
+        for occupancy, attack in zip(occupancies, attacks):
+            index = ((occupancy * magic) & MASK64) >> shift
+
+            existing = used[index]
+
+            if existing is None:
+                used[index] = attack
+            elif existing != attack:
+                valid = False
+                break
+
+        if valid:
+            return magic, shift, mask
+
+    raise RuntimeError(
+        f"Could not find magic for square {square_idx}, "
+        f"type {piece_type}"
+    )
+
+
+def java_hex(value):
+    """
+    Emit a Java hexadecimal long literal.
+
+    Java accepts unsigned-looking 64-bit hexadecimal literals with
+    the L suffix and interprets them as the corresponding signed long.
+    """
+    value &= MASK64
+    return f"0x{value:016X}L"
+
+
+def generate_piece_tables(piece_type):
+    masks = []
+    magics = []
+    shifts = []
+
+    piece_name = "rook" if piece_type == ROOK else "bishop"
+
+    for sq in range(64):
+        print(f"Generating {piece_name} magic for square {sq}...")
+
+        magic, shift, mask = find_magic(sq, piece_type)
+
+        masks.append(mask)
+        magics.append(magic)
+        shifts.append(shift)
+
+    return masks, magics, shifts
+
+
+def write_array(f, name, values, formatter):
+    f.write(f"    private static final long[] {name} = {{\n")
+
+    for i in range(0, len(values), 4):
+        chunk = values[i:i + 4]
+
+        f.write(
+            "        "
+            + ", ".join(formatter(x) for x in chunk)
+            + ",\n"
+        )
+
+    f.write("    };\n\n")
+
+
+def write_int_array(f, name, values):
+    f.write(f"    private static final int[] {name} = {{\n")
+
+    for i in range(0, len(values), 8):
+        chunk = values[i:i + 8]
+
+        f.write(
+            "        "
+            + ", ".join(str(x) for x in chunk)
+            + ",\n"
+        )
+
+    f.write("    };\n\n")
+
+
+def generate_java_file(
+    rook_data,
+    bishop_data,
+    filename="MagicTables.java",
+):
+    rook_masks, rook_magics, rook_shifts = rook_data
+    bishop_masks, bishop_magics, bishop_shifts = bishop_data
+
+    with open(filename, "w", encoding="utf-8") as f:
+        f.write("""package chess;
+
+/**
+ * GENERATED FILE.
+ *
+ * Do not edit manually.
+ *
+ * Generated by generate_magic.py
+ *
+ * Magic numbers are generated offline by Python.
+ * Attack tables are generated once at Java startup so that the
+ * generated class does not exceed the JVM constant-pool limit.
+ */
+public final class MagicTables {
+
+    private MagicTables() {}
+
+""")
+
+        write_array(f, "ROOK_MASKS", rook_masks, java_hex)
+        write_array(f, "ROOK_MAGICS", rook_magics, java_hex)
+        write_int_array(f, "ROOK_SHIFTS", rook_shifts)
+
+        write_array(f, "BISHOP_MASKS", bishop_masks, java_hex)
+        write_array(f, "BISHOP_MAGICS", bishop_magics, java_hex)
+        write_int_array(f, "BISHOP_SHIFTS", bishop_shifts)
+
+        f.write("""
+    /*
+     * These tables are intentionally generated at runtime.
+     *
+     * The old implementation stored every attack bitboard as a Java
+     * constant. That can exceed the JVM's 65,535-entry constant-pool
+     * limit. These arrays contain only 64 table references; the actual
+     * long[] tables are allocated on the heap during class initialization.
+     */
+    private static final long[][] ROOK_ATTACKS = new long[64][];
+    private static final long[][] BISHOP_ATTACKS = new long[64][];
+
+    static {
+        initializeRookTables();
+        initializeBishopTables();
+    }
+
+    private static void initializeRookTables() {
+        for (int square = 0; square < 64; square++) {
+            int relevantBits = Long.bitCount(ROOK_MASKS[square]);
+            int tableSize = 1 << relevantBits;
+
+            long[] table = new long[tableSize];
+
+            for (int i = 0; i < tableSize; i++) {
+                long occupancy =
+                    occupancyFromIndex(ROOK_MASKS[square], i);
+
+                int index = (int) (
+                    (occupancy * ROOK_MAGICS[square])
+                    >>> ROOK_SHIFTS[square]
+                );
+
+                table[index] =
+                    generateSlidingAttacks(
+                        square,
+                        occupancy,
+                        true
+                    );
+            }
+
+            ROOK_ATTACKS[square] = table;
+        }
+    }
+
+    private static void initializeBishopTables() {
+        for (int square = 0; square < 64; square++) {
+            int relevantBits = Long.bitCount(BISHOP_MASKS[square]);
+            int tableSize = 1 << relevantBits;
+
+            long[] table = new long[tableSize];
+
+            for (int i = 0; i < tableSize; i++) {
+                long occupancy =
+                    occupancyFromIndex(BISHOP_MASKS[square], i);
+
+                int index = (int) (
+                    (occupancy * BISHOP_MAGICS[square])
+                    >>> BISHOP_SHIFTS[square]
+                );
+
+                table[index] =
+                    generateSlidingAttacks(
+                        square,
+                        occupancy,
+                        false
+                    );
+            }
+
+            BISHOP_ATTACKS[square] = table;
+        }
+    }
+
+    /**
+     * Convert an integer in [0, 2^popcount(mask)) into a subset
+     * of the bits in mask.
+     */
+    private static long occupancyFromIndex(long mask, int index) {
+        long occupancy = 0L;
+
+        while (mask != 0L) {
+            long bit = mask & -mask;
+            mask -= bit;
+
+            if ((index & 1) != 0) {
+                occupancy |= bit;
+            }
+
+            index >>>= 1;
+        }
+
+        return occupancy;
+    }
+
+    /**
+     * Generate sliding attacks for one square and occupancy.
+     *
+     * This is used only during static initialization. Normal move
+     * generation uses the precomputed magic tables above.
+     */
+    private static long generateSlidingAttacks(
+        int square,
+        long occupancy,
+        boolean rook
+    ) {
+        int file = square & 7;
+        int rank = square >>> 3;
+
+        long attacks = 0L;
+
+        if (rook) {
+            attacks |= ray(file, rank, 1, 0, occupancy);
+            attacks |= ray(file, rank, -1, 0, occupancy);
+            attacks |= ray(file, rank, 0, 1, occupancy);
+            attacks |= ray(file, rank, 0, -1, occupancy);
+        } else {
+            attacks |= ray(file, rank, 1, 1, occupancy);
+            attacks |= ray(file, rank, 1, -1, occupancy);
+            attacks |= ray(file, rank, -1, 1, occupancy);
+            attacks |= ray(file, rank, -1, -1, occupancy);
+        }
+
+        return attacks;
+    }
+
+    private static long ray(
+        int file,
+        int rank,
+        int df,
+        int dr,
+        long occupancy
+    ) {
+        long attacks = 0L;
+
+        int f = file + df;
+        int r = rank + dr;
+
+        while (f >= 0 && f < 8 && r >= 0 && r < 8) {
+            int square = (r << 3) | f;
+            long bit = 1L << square;
+
+            attacks |= bit;
+
+            if ((occupancy & bit) != 0L) {
+                break;
+            }
+
+            f += df;
+            r += dr;
+        }
+
+        return attacks;
+    }
+
+    public static long rookAttacks(int square, long occupancy) {
+        long masked = occupancy & ROOK_MASKS[square];
+
+        int index = (int) (
+            (masked * ROOK_MAGICS[square])
+            >>> ROOK_SHIFTS[square]
+        );
+
+        return ROOK_ATTACKS[square][index];
+    }
+
+    public static long bishopAttacks(int square, long occupancy) {
+        long masked = occupancy & BISHOP_MASKS[square];
+
+        int index = (int) (
+            (masked * BISHOP_MAGICS[square])
+            >>> BISHOP_SHIFTS[square]
+        );
+
+        return BISHOP_ATTACKS[square][index];
+    }
+
+    public static long queenAttacks(int square, long occupancy) {
+        return rookAttacks(square, occupancy)
+             | bishopAttacks(square, occupancy);
+    }
+}
+""")
+
+    print(f"Generated {filename}")
+
+
+if __name__ == "__main__":
+    # System randomness is fine here because these magic numbers only
+    # need to be found once. If generation becomes inconveniently slow,
+    # a fixed seed can be supplied for reproducibility.
+    random.seed()
+
+    print("Generating rook tables...")
+    rook_data = generate_piece_tables(ROOK)
+
+    print("Generating bishop tables...")
+    bishop_data = generate_piece_tables(BISHOP)
+
+    generate_java_file(
+        rook_data,
+        bishop_data,
+    )
