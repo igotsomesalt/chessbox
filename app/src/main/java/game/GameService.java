@@ -111,10 +111,11 @@ public class GameService {
                 else {
                     int completed = i + 1;
                     int percent = completed * 100 / numGames;
+                    long seconds = (Duration.ofNanos(System.nanoTime() - startNanos)).toSeconds();
 
                     sendMessage(String.format(
-                        "\rProgress: [%3d%%] (%d/%d games)",
-                        percent, completed, numGames
+                        "\rPlaying games: [%3d%%] (%d/%d games) | %.2f games/s ",
+                        percent, completed, numGames, ((float) numGames) / seconds
                     ));
                 }
                 
@@ -159,7 +160,7 @@ public class GameService {
     private String formatResult(Result result) {
         return String.format(
             "\nWorker threads finished in total elasped time of %d ms at %s\n\nopening_book = %s\n" +
-            "games = %d\nthreads = %d\noutcomes = %s\ntotal_games_duration = %d ms\nthroughput = %.1f games/s\n",
+            "games = %d\nthreads = %d\noutcomes = %s\ntotal_games_duration = %d ms\nthroughput = %.2f games/s\n",
             result.duration().toMillis(), Instant.now().toString(), result.openingBook().toString(),
             result.games, result.threads, result.outcomes.toString(), result.duration().toMillis(), 
             ((float)result.games) / result.duration().toSeconds()
