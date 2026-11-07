@@ -31,7 +31,7 @@ public class GameService {
     public GameService() {
     }
 
-    public void registerPlayerFactory(PlayerProvider provider, boolean white) {
+    public void registerPlayerProvider(PlayerProvider provider, boolean white) {
         playerProviders.put(white, provider); 
     }
 
@@ -73,13 +73,24 @@ public class GameService {
             PlayerProvider blackFactory = playerProviders.get(!swap);
 
             completionService.submit(() -> {
-                Game game = new Game(
-                    position,
-                    whiteFactory.aquire(),
-                    blackFactory.aquire()
-                );
+                Player white = null;
+                Player black = null;
 
-                return game.call();
+                try {
+                    white = whiteFactory.acquire();
+                    black = blackFactory.acquire();
+
+                    Game game = new Game(position, white, black);
+                    return game.call();
+                } finally {
+                    if (black != null) {
+                        blackFactory.release(black);
+                    }
+
+                    if (white != null) {
+                        whiteFactory.release(white);
+                    }
+                }
             });
         }
 
@@ -159,7 +170,7 @@ public class GameService {
     private String formatResult(Result result) {
         return String.format(
             "\nWorker threads finished in total elasped time of %d ms at %s\n\nopening_book = %s\n" +
-            "games = %d\nthreads = %d\noutcomes = %s\ntotal_games_duration = %d ms\nthroughput = %.2f games/s\n",
+            "games = %d\nthreads = %d\noutcomes = %s\ntotal_games_duration = %d ms\nthroughput = %.2f games/s\n\n",
             result.duration().toMillis(), Instant.now().toString(), result.openingBook().toString(),
             result.games, result.threads, result.outcomes.toString(), result.duration().toMillis(), 
             ((float)result.games) / result.duration().toSeconds()
