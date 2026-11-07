@@ -103,8 +103,14 @@ public class GameService {
                 Game.Result result = future.get();
 
                 Game.Outcome outcome = result.outcome();
-                String whiteName = String.format("%s(%d)", result.white().name(), result.white().id());
-                String blackName = String.format("%s(%d)", result.black().name(), result.black().id());
+                
+                String whiteName = String.format("%s(%s)", 
+                    result.white().name(), result.white().id()
+                    .toString().replace("-", "").substring(0, 7));
+
+                String blackName = String.format("%s(%s)", 
+                    result.black().name(), result.white().id()
+                    .toString().replace("-", "").substring(0, 7));
 
                 String name = outcome == Game.Outcome.DRAW ? "draw" : 
                     (outcome == Game.Outcome.WHITE_WIN ? whiteName : blackName);
