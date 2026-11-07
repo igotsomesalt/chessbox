@@ -10,11 +10,12 @@ import engine.UciEngine;
 public class EnginePlayer implements Player, AutoCloseable {
 
     private final UciEngine engine;
-    private UUID id = UUID.randomUUID();
+    private UUID id;
 
-    public EnginePlayer(EngineConfig config) throws Exception {
-        engine = new UciEngine(config);
-        engine.initialize();
+    public EnginePlayer(EngineConfig config, UUID id) throws Exception {
+        this.engine = new UciEngine(config);
+        this.engine.initialize();
+        this.id = id;
     }
 
     @Override

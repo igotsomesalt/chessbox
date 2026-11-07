@@ -2,6 +2,7 @@ package engine;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
@@ -16,9 +17,10 @@ public class EnginePool implements AutoCloseable {
 
         available = new ArrayBlockingQueue<>(size);
         engines = new ArrayList<>(size);
+        UUID id = UUID.randomUUID();
 
         for (int i = 0; i < size; i++) {
-            EnginePlayer engine = new EnginePlayer(config);
+            EnginePlayer engine = new EnginePlayer(config, id);
 
             engines.add(engine);
             available.add(engine);
