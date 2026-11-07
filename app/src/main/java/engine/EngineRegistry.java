@@ -2,7 +2,6 @@ package engine;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 public class EngineRegistry {
     Map<String, EngineConfig> configs;
@@ -11,9 +10,11 @@ public class EngineRegistry {
         configs = new HashMap<>();
     }
 
-    public void register(@SuppressWarnings("unchecked") Entry<String, EngineConfig>... entries) {
-        for (Entry<String, EngineConfig> entry : entries) {
-            configs.put(entry.getKey(), entry.getValue());
+    public void register(EngineConfig config) throws IllegalArgumentException {
+        if (configs.putIfAbsent(config.id(), config) != null) {
+            throw new IllegalArgumentException(
+                "Engine ID already registered: " + config.id()
+            );
         }
     }
 

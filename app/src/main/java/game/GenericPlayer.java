@@ -1,5 +1,6 @@
 package game;
 
+import java.util.UUID;
 import java.util.function.Supplier;
 
 import chess.Position;
@@ -8,11 +9,10 @@ public class GenericPlayer implements Player {
 
     private Supplier<String> player;
     private String name;
-    private int id;
+    private UUID id = UUID.randomUUID();
 
-    public GenericPlayer(String name, int id, Supplier<String> player) {
+    public GenericPlayer(String name, Supplier<String> player) {
         this.player = player;
-        this.id = id;
     }
 
     @Override
@@ -26,7 +26,7 @@ public class GenericPlayer implements Player {
     }
 
     @Override 
-    public int id() {
+    public UUID id() {
         return id;
     }
 }

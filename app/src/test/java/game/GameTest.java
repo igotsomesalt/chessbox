@@ -66,8 +66,8 @@ public class GameTest {
     }
 
     private void register2stockfishs(GameService game, int poolSize) {
-        EngineConfig config1 = new EngineConfig(0, "Stockfish", Path.of("../engines/stockfish.exe"));
-        EngineConfig config2 = new EngineConfig(1, "Stockfish", Path.of("../engines/stockfish.exe"));
+        EngineConfig config1 = new EngineConfig("0", "Stockfish", Path.of("../engines/stockfish.exe"));
+        EngineConfig config2 = new EngineConfig("1", "Stockfish", Path.of("../engines/stockfish.exe"));
 
         game.registerLogListener(message -> {
             System.out.print(message);

@@ -1,5 +1,7 @@
 package game;
 
+import java.util.UUID;
+
 import chess.Fen;
 import chess.Position;
 import engine.EngineConfig;
@@ -8,6 +10,7 @@ import engine.UciEngine;
 public class EnginePlayer implements Player, AutoCloseable {
 
     private final UciEngine engine;
+    private UUID id = UUID.randomUUID();
 
     public EnginePlayer(EngineConfig config) throws Exception {
         engine = new UciEngine(config);
@@ -24,11 +27,11 @@ public class EnginePlayer implements Player, AutoCloseable {
         return engine.getConfig().name();
     }
 
-    @Override 
-    public int id() {
-        return engine.getConfig().id();
+    @Override
+    public UUID id() {
+        return id;
     }
-
+    
     @Override
     public void close() throws Exception {
         engine.close();

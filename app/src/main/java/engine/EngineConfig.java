@@ -3,7 +3,7 @@ package engine;
 import java.nio.file.Path;
 import java.util.Map;
 
-public record EngineConfig(Integer id, String name, Path executable, Map<String, String> options) {
+public record EngineConfig(String id, String name, Path executable, Map<String, String> options) {
     public EngineConfig {
         if (id == null) {
             throw new IllegalArgumentException("Engine ID is required");
@@ -20,7 +20,7 @@ public record EngineConfig(Integer id, String name, Path executable, Map<String,
         options = options == null ? Map.of() : Map.copyOf(options);
     }
 
-    public EngineConfig(int id, String name, Path executable) {
+    public EngineConfig(String id, String name, Path executable) {
         this(id, name, executable, Map.of());
     }
 }
