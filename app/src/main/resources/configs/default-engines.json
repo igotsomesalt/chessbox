@@ -1,0 +1,13 @@
+{
+  "engines": [
+    {
+        "id": "stockfish",
+        "name": "Stockfish",
+        "paths": {
+            "windows" : "engines/windows/stockfish.exe",
+            "linux" : "engines/linux/stockfish",
+            "macos" : "engines/macos/stockfish"
+        }
+    }
+  ]
+}
