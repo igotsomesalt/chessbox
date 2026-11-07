@@ -121,11 +121,13 @@ public class GameService {
                 else {
                     int completed = i + 1;
                     int percent = completed * 100 / numGames;
-                    long seconds = (Duration.ofNanos(System.nanoTime() - startNanos)).toSeconds();
+
+                    double seconds = (System.nanoTime() - startNanos) / 1_000_000_000.0;
+                    double throughput = completed / seconds;
 
                     sendMessage(String.format(
                         "\rPlaying games: [%3d%%] (%d/%d games) | %.2f games/s ",
-                        percent, completed, numGames, ((float) numGames) / seconds
+                        percent, completed, numGames, throughput
                     ));
                 }
                 
