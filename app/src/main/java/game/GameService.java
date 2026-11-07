@@ -12,7 +12,6 @@ import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 import chess.Position;
 import opening.OpeningBook;
@@ -24,7 +23,7 @@ public class GameService {
         Duration duration, OpeningBook openingBook
     ) {}
 
-    private final Map<Boolean, Supplier<Player>> playerFactories = new HashMap<>();
+    private final Map<Boolean, PlayerProvider> playerProviders = new HashMap<>();
     private final List<Consumer<String>> logListeners  = new ArrayList<>();
 
     private List<Game> games = new ArrayList<>();
@@ -32,8 +31,8 @@ public class GameService {
     public GameService() {
     }
 
-    public void registerPlayerFactory(Supplier<Player> factory, boolean white) {
-        playerFactories.put(white, factory); 
+    public void registerPlayerFactory(PlayerProvider provider, boolean white) {
+        playerProviders.put(white, provider); 
     }
 
     public void registerLogListener(Consumer<String> listener) {
@@ -52,8 +51,8 @@ public class GameService {
             return;
         }
 
-        if (playerFactories.size() < 2) {
-            sendMessage(String.format("Number of players must be 2, instead found %s\n", playerFactories.size()));
+        if (playerProviders.size() < 2) {
+            sendMessage(String.format("Number of players must be 2, instead found %s\n", playerProviders.size()));
             return;
         }
 
@@ -70,14 +69,14 @@ public class GameService {
 
             Position position = openingBook.nextPosition();
 
-            Supplier<Player> whiteFactory = playerFactories.get(swap);
-            Supplier<Player> blackFactory = playerFactories.get(!swap);
+            PlayerProvider whiteFactory = playerProviders.get(swap);
+            PlayerProvider blackFactory = playerProviders.get(!swap);
 
             completionService.submit(() -> {
                 Game game = new Game(
                     position,
-                    whiteFactory.get(),
-                    blackFactory.get()
+                    whiteFactory.aquire(),
+                    blackFactory.aquire()
                 );
 
                 return game.call();
