@@ -2,6 +2,7 @@ package engine;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 public class EngineRegistry {
     Map<String, EngineConfig> configs;
@@ -14,6 +15,14 @@ public class EngineRegistry {
         if (configs.putIfAbsent(config.id(), config) != null) {
             throw new IllegalArgumentException(
                 "Engine ID already registered: " + config.id()
+            );
+        }
+    }
+
+    public void unregister(String id) {
+        if (configs.remove(id) == null) {
+            throw new NoSuchElementException(
+                "No engine registered with ID: " + id
             );
         }
     }
