@@ -114,7 +114,7 @@ public class GameService {
                         .toString().replace("-", "").substring(0, 7));
 
                     String blackName = String.format("%s(%s)", 
-                        result.black().name(), result.white().id()
+                        result.black().name(), result.black().id()
                         .toString().replace("-", "").substring(0, 7));
 
                     String name = outcome == Game.Outcome.DRAW ? "draw" : 
