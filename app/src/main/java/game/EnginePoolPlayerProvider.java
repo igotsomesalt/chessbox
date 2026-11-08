@@ -1,24 +1,36 @@
 package game;
 
-import engine.EngineConfig;
-import engine.EnginePool;
+import java.io.IOException;
+import java.util.NoSuchElementException;
+import java.util.UUID;
+
+import engine.EngineService;
 
 public class EnginePoolPlayerProvider implements PlayerProvider {
-    private EnginePool pool;
+    private EngineService engineService;
+    private String engineId;
+    private UUID playerId;
 
-    public EnginePoolPlayerProvider(EngineConfig config, int poolSize) throws Exception {
-        pool = new EnginePool(config, poolSize);
+    public EnginePoolPlayerProvider(
+        String engineId, int poolSize, EngineService engineService
+    ) 
+    throws NoSuchElementException, IOException {
+
+        this.engineService = engineService;
+        this.engineId = engineId;
+        this.playerId = UUID.randomUUID();
+        engineService.createPool(engineId, poolSize);
     }
 
 	@Override
 	public Player acquire() throws InterruptedException {
-        return new EnginePlayer(pool.acquire(), pool.id());
+        return new EnginePlayer(engineService.acquire(engineId), playerId);
 	}
 
 	@Override
 	public void release(Player player) throws IllegalArgumentException {
 		try {
-            pool.release(((EnginePlayer) player).getEngine());
+            engineService.release(engineId, ((EnginePlayer) player).getEngine());
         }
         catch (ClassCastException exception) {
             throw new IllegalArgumentException("Player is not instance of EnginePlayer");
