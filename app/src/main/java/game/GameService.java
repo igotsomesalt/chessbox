@@ -191,7 +191,7 @@ public class GameService {
             "games = %d\nthreads = %d\noutcomes = %s\ntotal_games_duration = %d ms\nthroughput = %.2f games/s\n\n",
             result.duration().toMillis(), Instant.now().toString(), result.openingBook().toString(),
             result.games, result.threads, result.outcomes.toString(), result.duration().toMillis(), 
-            ((float)result.games) / result.duration().toSeconds()
+            result.games / (result.duration().toNanos() / 1_000_000_000.0)
         );
     }
 }
