@@ -1,5 +1,6 @@
 package engine;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -13,7 +14,7 @@ public class EnginePool implements AutoCloseable {
     private final BlockingQueue<EnginePlayer> available;
     private final List<EnginePlayer> engines;
 
-    public EnginePool(EngineConfig config, int size) throws Exception {
+    public EnginePool(EngineConfig config, int size) throws IOException {
 
         available = new ArrayBlockingQueue<>(size);
         engines = new ArrayList<>(size);

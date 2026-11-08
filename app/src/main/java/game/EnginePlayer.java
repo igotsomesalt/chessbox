@@ -1,5 +1,6 @@
 package game;
 
+import java.io.IOException;
 import java.util.UUID;
 
 import chess.Fen;
@@ -12,14 +13,14 @@ public class EnginePlayer implements Player, AutoCloseable {
     private final UciEngine engine;
     private UUID id;
 
-    public EnginePlayer(EngineConfig config, UUID id) throws Exception {
+    public EnginePlayer(EngineConfig config, UUID id) throws IOException {
         this.engine = new UciEngine(config);
         this.engine.initialize();
         this.id = id;
     }
 
     @Override
-    public String getMove(Position position) throws Exception {
+    public String getMove(Position position) throws IOException {
         return engine.getBestMove(Fen.toFen(position), 10);
     }
 
