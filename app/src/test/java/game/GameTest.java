@@ -14,7 +14,7 @@ import opening.OpeningBook;
 public class GameTest {
 
     @Test 
-    void play10games4threadsVerboseFalse() {
+    void play10games4threadsVerboseFalse() throws Exception  {
         GameService game = new GameService();
         EngineService engineService = new EngineService(new EngineRegistry());
         OpeningBook openingBook = getOpeningBook("/openings/4mvs_+90_+99.epd");
@@ -23,7 +23,7 @@ public class GameTest {
     }
 
     @Test
-    void play10games4threadVerboseTrue() {
+    void play10games4threadVerboseTrue() throws Exception  {
         GameService game = new GameService();
         EngineService engineService = new EngineService(new EngineRegistry());
         OpeningBook openingBook = getOpeningBook("/openings/4mvs_+90_+99.epd");
@@ -32,7 +32,7 @@ public class GameTest {
     }
 
     @Test
-    void play10games1threadVerboseFalse() {
+    void play10games1threadVerboseFalse() throws Exception  {
         GameService game = new GameService();
         EngineService engineService = new EngineService(new EngineRegistry());
         OpeningBook openingBook = getOpeningBook("/openings/4mvs_+90_+99.epd");
@@ -41,7 +41,7 @@ public class GameTest {
     }
 
     @Test 
-    void play100games4threadsVerboseFalse() {
+    void play100games4threadsVerboseFalse() throws Exception {
         GameService game = new GameService();
         EngineService engineService = new EngineService(new EngineRegistry());
         OpeningBook openingBook = getOpeningBook("/openings/4mvs_+90_+99.epd");
@@ -50,7 +50,7 @@ public class GameTest {
     }
 
     @Test 
-    void play100games1threadsVerboseFalse() {
+    void play100games1threadsVerboseFalse() throws Exception {
         GameService game = new GameService();
         EngineService engineService = new EngineService(new EngineRegistry());
         OpeningBook openingBook = getOpeningBook("/openings/4mvs_+90_+99.epd");
