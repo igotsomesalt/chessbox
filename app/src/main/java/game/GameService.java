@@ -41,20 +41,20 @@ public class GameService {
     }
 
     @SuppressWarnings("null")
-    public void start(int numGames, int numThreads, OpeningBook openingBook, boolean verbose) {
-        if (numGames < 1) {
-            sendMessage(String.format("Number of games must be positive, instead got %d\n", numGames));
-            return;
-        }
+    public void start(
+        int numGames, int numThreads, OpeningBook openingBook, boolean verbose
+    ) throws IllegalArgumentException, IllegalStateException {
 
-        if (numThreads < 1) {
-            sendMessage(String.format("Number of threads must be positive, instead got %d\n", numThreads));
-            return;
+        if (numGames < 1) {
+            throw new IllegalArgumentException(String.format(
+                "Number of games must be positive, instead got %d\n", numGames
+            ));
         }
 
         if (playerProviders.size() < 2) {
-            sendMessage(String.format("Number of players must be 2, instead found %s\n", playerProviders.size()));
-            return;
+            throw new IllegalStateException(
+                String.format("Number of players must be 2, instead found %s\n", playerProviders.size())
+            );
         }
 
         sendMessage(String.format("Starting %d games on %d worker threads\n", numGames, numThreads));
