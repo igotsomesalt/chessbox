@@ -48,7 +48,13 @@ public class GameService {
 
         if (numGames < 1) {
             throw new IllegalArgumentException(String.format(
-                "Number of games must be positive, instead got %d\n", numGames
+                "Number of games must be positive: %d\n", numGames
+            ));
+        }
+
+        if (numThreads < 1) {
+            throw new IllegalArgumentException(String.format(
+                "Number of threads must be positive: %d\n", numThreads
             ));
         }
 
