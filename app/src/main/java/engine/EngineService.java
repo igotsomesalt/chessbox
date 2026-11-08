@@ -42,10 +42,13 @@ public class EngineService implements AutoCloseable {
         pools.put(engineId, pool);
     }
 
-    public void destroyPool(String engineId) {
-        if (pools.remove(engineId) == null) {
+    public void destroyPool(String engineId) throws NoSuchElementException, IOException {
+        EnginePool pool = pools.remove(engineId);
+        if (pool == null) {
             throw new NoSuchElementException("Pool does not exist: " + engineId);
         }
+
+        pool.close();
     }
 
     public UciEngine acquire(String engineId) throws NoSuchElementException, InterruptedException {
