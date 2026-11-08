@@ -36,9 +36,7 @@ public class EngineConfigLoader {
         }
     }
 
-    public List<EngineConfig> loadUserConfigs(
-        Path configPath
-    ) throws IOException {
+    public List<EngineConfig> loadUserConfigs(Path configPath) throws IOException {
 
         if (Files.notExists(configPath)) {
             return List.of();
