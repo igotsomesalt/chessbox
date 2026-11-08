@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
-import game.EnginePlayer;
-
 public class EngineService implements AutoCloseable {
 
     private EngineRegistry registry;
@@ -69,7 +67,13 @@ public class EngineService implements AutoCloseable {
     }
 
     @Override 
-    public void close() {
-
+    public void close() throws IOException {
+        try {
+            for (EnginePool pool : pools.values()) {
+                pool.close();
+            }
+        } finally {
+            pools.clear();
+        }
     }
 }
