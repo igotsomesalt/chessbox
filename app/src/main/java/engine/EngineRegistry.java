@@ -27,7 +27,9 @@ public class EngineRegistry {
         }
     }
 
-    public EngineConfig getConfig(String name) {
-        return configs.get(name);
+    public EngineConfig getConfig(String id) throws NoSuchElementException {
+        EngineConfig config = configs.get(id);
+        if (config == null) throw new NoSuchElementException("No engine registered with ID: " + id);
+        return config;
     }
 }
