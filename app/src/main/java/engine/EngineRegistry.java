@@ -1,5 +1,6 @@
 package engine;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -31,5 +32,9 @@ public class EngineRegistry {
         EngineConfig config = configs.get(id);
         if (config == null) throw new NoSuchElementException("No engine registered with ID: " + id);
         return config;
+    }
+
+    public Collection<EngineConfig> getConfigs() {
+        return configs.values();
     }
 }
