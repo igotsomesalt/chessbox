@@ -19,6 +19,15 @@ public class EnginePlayer implements Player, AutoCloseable {
         this.id = id;
     }
 
+    public EnginePlayer(UciEngine engine, UUID id) {
+        this.engine = engine;
+        this.id = id;
+    }
+
+    public UciEngine getEngine() {
+        return engine;
+    }
+
     @Override
     public String getMove(Position position) throws IOException {
         return engine.getBestMove(Fen.toFen(position), 10);

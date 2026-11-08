@@ -12,13 +12,13 @@ public class EnginePoolPlayerProvider implements PlayerProvider {
 
 	@Override
 	public Player acquire() throws InterruptedException {
-        return pool.acquire();
+        return new EnginePlayer(pool.acquire(), pool.id());
 	}
 
 	@Override
 	public void release(Player player) throws IllegalArgumentException {
 		try {
-            pool.release((EnginePlayer) player);
+            pool.release(((EnginePlayer) player).getEngine());
         }
         catch (ClassCastException exception) {
             throw new IllegalArgumentException("Player is not instance of EnginePlayer");
