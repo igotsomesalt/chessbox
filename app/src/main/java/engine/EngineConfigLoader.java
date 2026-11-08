@@ -36,7 +36,7 @@ public class EngineConfigLoader {
         }
     }
 
-    public List<EngineConfig> loadUserConfigs(Path configPath) throws IOException {
+    public List<EngineConfig> loadUserConfigs(Path configPath, Path baseDir) throws IOException {
 
         if (Files.notExists(configPath)) {
             return List.of();
@@ -47,7 +47,7 @@ public class EngineConfigLoader {
                 in, ConfigFile.class
             );
 
-            return convert(file, configPath.toAbsolutePath().getParent());
+            return convert(file, baseDir);
         }
     }
 

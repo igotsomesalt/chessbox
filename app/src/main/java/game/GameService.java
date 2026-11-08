@@ -148,7 +148,17 @@ public class GameService {
                         ));
                     }
                     
-                } catch (ExecutionException e) {
+                } catch (ExecutionException e) {                        
+                    int completed = i + 1;
+                    int percent = completed * 100 / numGames;
+
+                    double seconds = (System.nanoTime() - startNanos) / 1_000_000_000.0;
+                    double throughput = completed / seconds;
+
+                    sendMessage(String.format(
+                        "\rPlaying games: [%3d%%] (%d/%d games) | %.2f games/s ",
+                        percent, completed, numGames, throughput
+                    ));
                     sendMessage("Game failed: " + e.getCause() + "\n");
 
                 } catch (InterruptedException e) {

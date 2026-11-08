@@ -41,7 +41,9 @@ public class EngineConfigTest {
                 .toURI()
         );
 
-        List<EngineConfig> configs = loader.loadUserConfigs(configPath);
+        Path baseDir = configPath.getParent();
+
+        List<EngineConfig> configs = loader.loadUserConfigs(configPath, baseDir);
 
         assertEquals(2, configs.size());
         assertEquals("Test Engine", configs.get(0).name());

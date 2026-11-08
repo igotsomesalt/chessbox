@@ -1,9 +1,9 @@
 {
   "engines": [
     {
-      "id": "test-engine-1",
-      "name": "Test Engine",
-      "path": "engines/test-engine.exe"
+      "id": "stockfish19",
+      "name": "Stockfish",
+      "path": "engines/windows/stockfish.exe"
     },
     {
       "id": "test-engine-2",

@@ -22,12 +22,14 @@ public class GameTest {
         OpeningBook openingBook = getOpeningBook("/openings/4mvs_+90_+99.epd");
         EngineConfigLoader loader = new EngineConfigLoader();
 
-        List<EngineConfig> defaultConfigs = loader.loadDefaults(Path.of(System.getProperty("user.dir")));
-        List<EngineConfig> userConfigs = loader.loadUserConfigs(Path.of(            
-            getClass()
-                .getResource("/configs/user-engines.json")
-                .toURI()
-            )
+        Path baseDir = Path.of(
+            System.getProperty("user.dir")
+        ).toAbsolutePath().normalize();
+
+        List<EngineConfig> defaultConfigs = loader.loadDefaults(baseDir);
+
+        List<EngineConfig> userConfigs = loader.loadUserConfigs(
+            Path.of(System.getenv("ENGINE_USER_CONFIG_PATH")), baseDir
         );
 
         EngineConfig ec1 = defaultConfigs.get(0);
