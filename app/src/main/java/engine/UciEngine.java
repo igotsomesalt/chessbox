@@ -13,7 +13,7 @@ public class UciEngine implements AutoCloseable {
 
     public UciEngine(EngineConfig config) throws IOException {
         this.config = config;
-        ProcessBuilder builder = new ProcessBuilder(config.executable().toString());
+        ProcessBuilder builder = new ProcessBuilder(config.path().toString());
 
         builder.redirectError(ProcessBuilder.Redirect.INHERIT);
 

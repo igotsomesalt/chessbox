@@ -3,7 +3,7 @@ package engine;
 import java.nio.file.Path;
 import java.util.Map;
 
-public record EngineConfig(String id, String name, Path executable, Map<String, String> options) {
+public record EngineConfig(String id, String name, Path path, Map<String, String> options) {
     public EngineConfig {
         if (id == null) {
             throw new IllegalArgumentException("Engine ID is required");
@@ -13,7 +13,7 @@ public record EngineConfig(String id, String name, Path executable, Map<String, 
             throw new IllegalArgumentException("Engine name is required");
         }
 
-        if (executable == null) {
+        if (path == null) {
             throw new IllegalArgumentException("Executable path is required");
         }
 
