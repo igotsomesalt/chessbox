@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.Executors;
@@ -24,7 +25,7 @@ public class GameService {
     ) {}
 
     private final Map<Boolean, PlayerProvider> playerProviders = new HashMap<>();
-    private final List<Consumer<String>> logListeners  = new ArrayList<>();
+    private final List<Consumer<String>> logListeners  = new CopyOnWriteArrayList<>();
 
     private List<Game> games = new ArrayList<>();
 
@@ -103,7 +104,7 @@ public class GameService {
                 Game.Result result = future.get();
 
                 Game.Outcome outcome = result.outcome();
-                
+
                 String whiteName = String.format("%s(%s)", 
                     result.white().name(), result.white().id()
                     .toString().replace("-", "").substring(0, 7));
