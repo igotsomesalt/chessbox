@@ -2,16 +2,40 @@ package game;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
 import engine.EngineConfig;
+import engine.EngineConfigLoader;
 import engine.EngineRegistry;
 import engine.EngineService;
 import opening.FenOpeningBook;
 import opening.OpeningBook;
 
 public class GameTest {
+
+    @Test
+    void playe10games4threadsEnvVsStockfish() throws Exception {
+        GameService game = new GameService();
+        EngineService engineService = new EngineService(new EngineRegistry());
+        OpeningBook openingBook = getOpeningBook("/openings/4mvs_+90_+99.epd");
+        EngineConfigLoader loader = new EngineConfigLoader();
+
+        List<EngineConfig> defaultConfigs = loader.loadDefaults(Path.of(System.getProperty("user.dir")));
+        List<EngineConfig> userConfigs = loader.loadUserConfigs(Path.of(            
+            getClass()
+                .getResource("/configs/user-engines.json")
+                .toURI()
+            )
+        );
+
+        EngineConfig ec1 = defaultConfigs.get(0);
+        EngineConfig ec2 = userConfigs.get(0);
+        register2engines(ec1, ec2, game, engineService, 4);
+        
+        game.start(10, 4, openingBook, false);
+    }
 
     @Test 
     void play10games4threadsVerboseFalse() throws Exception  {
@@ -75,14 +99,19 @@ public class GameTest {
     private void register2stockfishs(GameService game, EngineService engineService, int poolSize) {
         EngineConfig config1 = new EngineConfig("0", "Stockfish", Path.of("../engines/stockfish.exe"));
         EngineConfig config2 = new EngineConfig("1", "Stockfish", Path.of("../engines/stockfish.exe"));
+        register2engines(config1, config2, game, engineService, poolSize);
+    }
 
+    private void register2engines(
+        EngineConfig ec1, EngineConfig ec2, GameService game, EngineService engineService, int poolSize
+    ) {
         game.registerLogListener(message -> {
             System.out.print(message);
             System.out.flush();
         });
 
         for (int i = 0; i < 2; i++) {
-            EngineConfig config = i == 0 ? config1 : config2;
+            EngineConfig config = i == 0 ? ec1 : ec2;
             EnginePoolPlayerProvider playerProvider = null;
             try {
                 engineService.register(config);
