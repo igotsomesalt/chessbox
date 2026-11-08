@@ -1,4 +1,4 @@
-package game;
+package engine;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -10,9 +10,6 @@ import java.nio.file.Path;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
-
-import engine.EngineConfig;
-import engine.EngineConfigLoader;
 
 public class EngineConfigTest {
 

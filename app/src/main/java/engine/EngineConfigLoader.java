@@ -15,7 +15,7 @@ public class EngineConfigLoader {
 
     private record ConfigFile(List<EngineEntry> engines) {}
 
-    private record EngineEntry(String id, String name, Map<String, String> paths) {}
+    private record EngineEntry(String id, String name, String path, Map<String, String> paths) {}
 
     public List<EngineConfig> loadDefaults(Path applicationDir) throws IOException {
 
@@ -65,9 +65,11 @@ public class EngineConfigLoader {
 
         return file.engines().stream()
             .map(entry -> {
-                String relativePath = entry.paths() == null
-                    ? null
-                    : entry.paths().get(platform);
+                String relativePath = entry.path();
+
+                if (relativePath == null && entry.paths() != null) {
+                    relativePath = entry.paths().get(platform);
+                }
 
                 if (relativePath == null || relativePath.isBlank()) {
                     throw new IllegalArgumentException(
