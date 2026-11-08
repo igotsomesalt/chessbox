@@ -1,0 +1,14 @@
+{
+  "engines": [
+    {
+      "id": "test-engine-1",
+      "name": "Test Engine",
+      "path": "engines/test-engine.exe"
+    },
+    {
+      "id": "test-engine-2",
+      "name": "Another Engine",
+      "path": "engines/another-engine.exe"
+    }
+  ]
+}
