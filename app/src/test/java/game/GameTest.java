@@ -85,10 +85,13 @@ public class GameTest {
             EngineConfig config = i == 0 ? config1 : config2;
             EnginePoolPlayerProvider playerProvider = null;
             try {
-                playerProvider = new EnginePoolPlayerProvider(config.id(), poolSize, engineService);
+                engineService.register(config);
+                engineService.createPool(config.id(), poolSize);
+                playerProvider = new EnginePoolPlayerProvider(config.id(), engineService);
             }
             catch (Exception e) {
-                System.out.println("Could not create engine pool");
+                System.out.println(e.getMessage());
+                System.out.println(e.getStackTrace());
                 return;
             }
             game.registerPlayerProvider(playerProvider, i == 0);

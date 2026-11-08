@@ -12,14 +12,13 @@ public class EnginePoolPlayerProvider implements PlayerProvider {
     private UUID playerId;
 
     public EnginePoolPlayerProvider(
-        String engineId, int poolSize, EngineService engineService
+        String engineId, EngineService engineService
     ) 
     throws NoSuchElementException, IOException {
 
         this.engineService = engineService;
         this.engineId = engineId;
         this.playerId = UUID.randomUUID();
-        engineService.createPool(engineId, poolSize);
     }
 
 	@Override
