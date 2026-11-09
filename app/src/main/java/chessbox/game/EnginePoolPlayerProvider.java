@@ -8,28 +8,25 @@ import chessbox.engine.EngineService;
 
 public class EnginePoolPlayerProvider implements PlayerProvider, AutoCloseable {
     private EngineService engineService;
-    private String engineId;
-    private UUID playerId;
+    private UUID poolId;
 
     public EnginePoolPlayerProvider(
-        String engineId, EngineService engineService
+        UUID poolId, EngineService engineService
     ) 
     throws NoSuchElementException, IOException {
-
         this.engineService = engineService;
-        this.engineId = engineId;
-        this.playerId = UUID.randomUUID();
+        this.poolId = poolId;
     }
 
 	@Override
-	public Player acquire() throws InterruptedException {
-        return new EnginePlayer(engineService.acquire(engineId), playerId);
+	public Player acquire() throws InterruptedException, NoSuchElementException {
+        return new EnginePlayer(engineService.acquire(poolId), poolId);
 	}
 
 	@Override
 	public void release(Player player) throws IllegalArgumentException {
 		try {
-            engineService.release(engineId, ((EnginePlayer) player).getEngine());
+            engineService.release(poolId, ((EnginePlayer) player).getEngine());
         }
         catch (ClassCastException exception) {
             throw new IllegalArgumentException("Player is not instance of EnginePlayer");
@@ -38,6 +35,6 @@ public class EnginePoolPlayerProvider implements PlayerProvider, AutoCloseable {
 
     @Override 
     public void close() {
-        engineService.releaseAll(engineId);
+        engineService.releaseAll(poolId);
     }
 }

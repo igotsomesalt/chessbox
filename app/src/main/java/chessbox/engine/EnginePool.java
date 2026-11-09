@@ -48,7 +48,7 @@ public class EnginePool implements AutoCloseable {
         return available.take();
     }
 
-    public void release(UciEngine engine) {
+    public void release(UciEngine engine) throws IllegalArgumentException, IllegalStateException {
         if (!engines.contains(engine)) {
             throw new IllegalArgumentException(
                 "Engine does not belong to this pool"

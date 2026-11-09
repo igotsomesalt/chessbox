@@ -5,13 +5,14 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.UUID;
 
 import chessbox.App;
 
 public class EngineService implements AutoCloseable {
 
     private EngineRegistry registry;
-    private final Map<String, EnginePool> pools = new HashMap<>();
+    private final Map<UUID, EnginePool> pools = new HashMap<>();
 
     public EngineService(EngineRegistry registry) {
         this.registry = registry;
@@ -21,64 +22,90 @@ public class EngineService implements AutoCloseable {
         registry.register(config);
     }
 
-    public void unregister(String id) throws NoSuchElementException {
-        registry.unregister(id);
+    public void unregister(String engineId) throws NoSuchElementException {
+        registry.unregister(engineId);
     }
 
-    public EngineConfig getConfig(String id) throws NoSuchElementException {
-        return registry.getConfig(id);
+    public EngineConfig getConfig(String engineId) throws NoSuchElementException {
+        return registry.getConfig(engineId);
     }
 
     public Collection<EngineConfig> listEngines() {
         return registry.getConfigs();
     }
 
-    public void createPool(String engineId, int size) throws NoSuchElementException, IOException {
+    public UUID createPool(String engineId, int size) throws NoSuchElementException, IOException {
         EngineConfig config = registry.getConfig(engineId);
 
-        if (pools.containsKey(engineId)) {
-            throw new IllegalArgumentException("Pool already exists: " + engineId);
-        }
-
         EnginePool pool = new EnginePool(config, size);
-        pools.put(engineId, pool);
-        sendMessage(String.format("Pool created with size %d for engine ID: %s", size, engineId));
+        UUID id = UUID.randomUUID();
+        String shortId = chessbox.util.UUID.shortId(id);
+        pools.put(id, pool);
+
+        sendMessage(String.format("""
+            Pool created:
+                id = %s
+                size = %d 
+            """, shortId, size
+        ));
+
+        return id;
     }
 
-    public void destroyPool(String engineId) throws NoSuchElementException, IOException {
-        EnginePool pool = pools.remove(engineId);
+    public void destroyPool(UUID poolId) throws NoSuchElementException, IOException {
+        EnginePool pool = pools.remove(poolId);
         if (pool == null) {
-            throw new NoSuchElementException("Pool does not exist: " + engineId);
+            throw new NoSuchElementException("Pool does not exist: " + poolId);
         }
 
         pool.close();
-        sendMessage("Pool destroyed for engine ID: " + engineId);
+        sendMessage("Pool destroyed: " + poolId);
     }
 
-    public UciEngine acquire(String engineId) throws NoSuchElementException, InterruptedException {
-        EnginePool pool = pools.get(engineId);
-        if (pool == null) {
-            throw new NoSuchElementException("Pool does not exist: " + engineId);
-        }
+    public void destroyPool(String poolId) throws NoSuchElementException, IllegalArgumentException, IOException {
+        UUID uuid = chessbox.util.UUID.findKey(poolId, pools.keySet());
+        EnginePool pool = pools.remove(uuid);
 
+        
+        pool.close();
+        sendMessage("Pool destroyed: " + poolId);
+    }
+
+    public UciEngine acquire(UUID poolId) throws NoSuchElementException, InterruptedException {
+        EnginePool pool = pools.get(poolId);
         return pool.acquire();
     }
 
-    public void release(String engineId, UciEngine engine) {
-        EnginePool pool = pools.get(engineId);
+    public UciEngine acquire(String poolId) throws NoSuchElementException, InterruptedException {
+        EnginePool pool = pools.get(chessbox.util.UUID.findKey(poolId, pools.keySet()));
+        return pool.acquire();
+    }
+
+    public void release(UUID poolId, UciEngine engine) throws NoSuchElementException, IllegalArgumentException, IllegalStateException {
+        EnginePool pool = pools.get(poolId);
         if (pool == null) {
-            throw new NoSuchElementException("Pool does not exist: " + engineId);
+            throw new NoSuchElementException("Pool does not exist: " + poolId);
         }
 
         pool.release(engine);
     }
 
-    public void releaseAll(String engineId) {
-        EnginePool pool = pools.get(engineId);
+    public void release(String poolId, UciEngine engine) throws NoSuchElementException, IllegalArgumentException, IllegalStateException { 
+        EnginePool pool = pools.get(chessbox.util.UUID.findKey(poolId, pools.keySet()));
+        pool.release(engine);
+    }
+
+    public void releaseAll(UUID poolId) throws NoSuchElementException, IllegalArgumentException {
+        EnginePool pool = pools.get(poolId);
         if (pool == null) {
-            throw new NoSuchElementException("Pool does not exist: " + engineId);
+            throw new NoSuchElementException("Pool does not exist: " + poolId);
         }
 
+        pool.releaseAll();
+    }
+
+    public void releaseAll(String poolId) throws NoSuchElementException, IllegalArgumentException {
+        EnginePool pool = pools.get(chessbox.util.UUID.findKey(poolId, pools.keySet()));
         pool.releaseAll();
     }
 

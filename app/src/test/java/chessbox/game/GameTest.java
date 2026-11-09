@@ -3,6 +3,7 @@ package chessbox.game;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 
@@ -99,21 +100,24 @@ public class GameTest {
     }
 
     private void register2stockfishs(GameService game, EngineService engineService, int poolSize) throws Exception {
-        EngineConfig config1 = new EngineConfig("0", "Stockfish", Path.of("../engines/stockfish.exe"));
-        EngineConfig config2 = new EngineConfig("1", "Stockfish", Path.of("../engines/stockfish.exe"));
-        register2engines(config1, config2, game, engineService, poolSize);
+        EngineConfigLoader loader = new EngineConfigLoader();
+        Path appDir = Path.of(
+            System.getProperty("user.dir")
+        ).toAbsolutePath().normalize();
+
+        List<EngineConfig> configs = loader.loadDefaults(appDir);
+        EngineConfig config = configs.get(0);
 
         game.registerLogListener(message -> {
             System.out.print(message);
             System.out.flush();
         });
 
-        engineService.register(config1);
-        engineService.register(config2);
-        engineService.createPool(config1.id(), poolSize);
-        engineService.createPool(config2.id(), poolSize);
-        PlayerProvider playerProvider1 = new EnginePoolPlayerProvider(config1.id(), engineService);
-        PlayerProvider playerProvider2 = new EnginePoolPlayerProvider(config2.id(), engineService);
+        engineService.register(config);
+        UUID id1 = engineService.createPool(config.id(), poolSize);
+        UUID id2 = engineService.createPool(config.id(), poolSize);
+        PlayerProvider playerProvider1 = new EnginePoolPlayerProvider(id1, engineService);
+        PlayerProvider playerProvider2 = new EnginePoolPlayerProvider(id2, engineService);
         game.registerPlayerProvider(playerProvider1, true);
         game.registerPlayerProvider(playerProvider2, false);
     }
@@ -131,8 +135,8 @@ public class GameTest {
             EnginePoolPlayerProvider playerProvider = null;
             try {
                 engineService.register(config);
-                engineService.createPool(config.id(), poolSize);
-                playerProvider = new EnginePoolPlayerProvider(config.id(), engineService);
+                UUID id = engineService.createPool(config.id(), poolSize);
+                playerProvider = new EnginePoolPlayerProvider(id, engineService);
             }
             catch (Exception e) {
                 System.out.println(e.getMessage());
