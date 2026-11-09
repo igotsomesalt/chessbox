@@ -42,12 +42,12 @@ public class EngineService implements AutoCloseable {
         String shortId = chessbox.util.UUID.shortId(id);
         pools.put(id, pool);
 
-        sendMessage(String.format("""
+        App.ctx.out().printf("""
             Pool created:
                 id = %s
                 size = %d 
             """, shortId, size
-        ));
+        );
 
         return id;
     }
@@ -73,6 +73,10 @@ public class EngineService implements AutoCloseable {
 
     public UciEngine acquire(UUID poolId) throws NoSuchElementException, InterruptedException {
         EnginePool pool = pools.get(poolId);
+        if (pool == null) {
+            throw new NoSuchElementException("Pool does not exist: " + poolId);
+        }
+
         return pool.acquire();
     }
 
@@ -121,6 +125,6 @@ public class EngineService implements AutoCloseable {
     }
 
     private void sendMessage(String message) {
-        App.ctx.out().print(message);
+        App.ctx.out().println(message);
     }
 }
