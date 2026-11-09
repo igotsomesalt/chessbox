@@ -22,11 +22,11 @@ public class GameService implements AutoCloseable {
 
     public static record Result(
         int games, int threads, Map<String, Integer> outcomes, 
-        Duration duration, OpeningBook openingBook
+        OpeningBook openingBook, Duration duration, Instant timestamp
     ) {}
 
     private final Map<Boolean, PlayerProvider> playerProviders = new HashMap<>();
-    private final List<Consumer<String>> logListeners  = new CopyOnWriteArrayList<>();
+    private final List<Consumer<GameEvent>> listeners  = new CopyOnWriteArrayList<>();
 
     private List<Game> games = new ArrayList<>();
 
@@ -37,12 +37,16 @@ public class GameService implements AutoCloseable {
         playerProviders.put(white, provider); 
     }
 
-    public void registerLogListener(Consumer<String> listener) {
-        logListeners.add(listener);
+    public void addListener(Consumer<GameEvent> listener) {
+        listeners.add(listener);
+    }
+
+    public void removeListener(Consumer<GameEvent> listener) {
+        listeners.remove(listener);
     }
 
     @SuppressWarnings("null")
-    public void start(
+    public Result start(
         int numGames, int numThreads, OpeningBook openingBook, boolean verbose
     ) throws IllegalArgumentException, IllegalStateException, Exception {
 
@@ -64,9 +68,11 @@ public class GameService implements AutoCloseable {
             );
         }
 
-        sendMessage(String.format("Starting %d games on %d worker threads\n", numGames, numThreads));
+        emit(new GameEvent.MatchStarted(numGames, numThreads, openingBook, Instant.now()));
 
         ExecutorService executor = Executors.newFixedThreadPool(numThreads);
+
+        Result result = null;
 
         try {
             ExecutorCompletionService<Game.Result> completionService = new ExecutorCompletionService<>(executor);
@@ -91,7 +97,10 @@ public class GameService implements AutoCloseable {
 
                         Game game = new Game(position, white, black);
                         return game.call();
-                    } finally {
+
+                    } 
+                    
+                    finally {
                         if (black != null) {
                             blackFactory.release(black);
                         }
@@ -103,22 +112,28 @@ public class GameService implements AutoCloseable {
                 });
             }
 
-            sendMessage("All games submitted at " + Instant.now() + "\n");
+            emit(new GameEvent.AllGamesSubmitted(Instant.now()));
             long startNanos = System.nanoTime();
 
             for (int i = 0; i < numGames; i++) {
+                int completed = i + 1;
+                int percent = completed * 100 / numGames;
+
+                double seconds = (System.nanoTime() - startNanos) / 1_000_000_000.0;
+                double throughput = completed / seconds;
+
                 try {
                     Future<Game.Result> future = completionService.take();
-                    Game.Result result = future.get();
+                    Game.Result gameResult = future.get();
 
-                    Game.Outcome outcome = result.outcome();
+                    Game.Outcome outcome = gameResult.outcome();
 
                     String whiteName = String.format("%s(%s)", 
-                        result.white().name(), result.white().id()
+                        gameResult.white().name(), gameResult.white().id()
                         .toString().replace("-", "").substring(0, 7));
 
                     String blackName = String.format("%s(%s)", 
-                        result.black().name(), result.black().id()
+                        gameResult.black().name(), gameResult.black().id()
                         .toString().replace("-", "").substring(0, 7));
 
                     String name = outcome == Game.Outcome.DRAW ? "draw" : 
@@ -126,38 +141,13 @@ public class GameService implements AutoCloseable {
 
                     outcomes.merge(name, 1, Integer::sum);
 
-                    if (verbose) {
-                        sendMessage(String.format(
-                            "Game finished:\n%s\n",
-                            formatGameResult(result)
-                        ));
-                    }
+                    if (verbose) emit(new GameEvent.GameFinishedVerbose(gameResult, Instant.now()));
 
-                    else {
-                        int completed = i + 1;
-                        int percent = completed * 100 / numGames;
-
-                        double seconds = (System.nanoTime() - startNanos) / 1_000_000_000.0;
-                        double throughput = completed / seconds;
-
-                        sendMessage(String.format(
-                            "\rPlaying games: [%3d%%] (%d/%d games) | %.2f games/s ",
-                            percent, completed, numGames, throughput
-                        ));
-                    }
+                    emit(new GameEvent.GameFinished(completed, percent, numGames, throughput, Instant.now()));
                     
-                } catch (ExecutionException e) {                        
-                    int completed = i + 1;
-                    int percent = completed * 100 / numGames;
-
-                    double seconds = (System.nanoTime() - startNanos) / 1_000_000_000.0;
-                    double throughput = completed / seconds;
-
-                    sendMessage(String.format(
-                        "\rPlaying games: [%3d%%] (%d/%d games) | %.2f games/s ",
-                        percent, completed, numGames, throughput
-                    ));
-                    sendMessage("Game failed: " + e.getCause() + "\n");
+                } catch (ExecutionException e) {
+                    emit(new GameEvent.GameFinished(completed, percent, numGames, throughput, Instant.now()));
+                    emit(new GameEvent.GameFailed(e.getCause()));
 
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
@@ -166,49 +156,29 @@ public class GameService implements AutoCloseable {
             }
 
             Duration totalDuration = Duration.ofNanos(System.nanoTime() - startNanos);
+            result = new Result(numGames, numThreads, outcomes, openingBook, totalDuration, Instant.now());
 
-            sendMessage("\n");
-            sendMessage(formatResult(new Result(
-                numGames, numThreads, outcomes, totalDuration, openingBook
-            )));
+            emit(new GameEvent.MatchFinished(result));
         }
+
         catch (Exception e) {
             executor.close();
             throw e;
         }
+
+        return result;
     }
 
     public void stop() {
         for (Game game : games) {
             game.stop();
         }
-
-        sendMessage("All games have been stopped\n");
     }
 
-    private void sendMessage(String message) {
-        for (Consumer<String> listener : logListeners) {
-            listener.accept(message);
+    private void emit(GameEvent event) {
+        for (Consumer<GameEvent> listener : listeners) {
+            listener.accept(event);
         }
-    }
-
-    private String formatGameResult(Game.Result result) {
-        return String.format(
-            "outcome = %s\ntermination = %s\nmoves = %s\nstarting_fen = %s\nending_fen = %s\ndate = %s\nduration = %d ms\n", 
-            result.outcome().toString(), result.termination().toString(), result.moves().toString(),
-            result.startingFen(),result.endingFen(),
-            result.startedAt().toString(), result.duration().toMillis()
-        );
-    }
-
-    private String formatResult(Result result) {
-        return String.format(
-            "\nWorker threads finished in total elasped time of %d ms at %s\n\nopening_book = %s\n" +
-            "games = %d\nthreads = %d\noutcomes = %s\ntotal_games_duration = %d ms\nthroughput = %.2f games/s\n\n",
-            result.duration().toMillis(), Instant.now().toString(), result.openingBook().toString(),
-            result.games, result.threads, result.outcomes.toString(), result.duration().toMillis(), 
-            result.games / (result.duration().toNanos() / 1_000_000_000.0)
-        );
     }
 
 	@Override

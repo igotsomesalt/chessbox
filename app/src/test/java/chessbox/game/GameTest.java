@@ -11,6 +11,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import chessbox.cli.listener.GameEventPrinter;
 import chessbox.engine.EngineConfig;
 import chessbox.engine.EngineConfigLoader;
 import chessbox.engine.EngineRegistry;
@@ -30,6 +31,8 @@ public class GameTest {
         engineService = new EngineService(new EngineRegistry());
         openingBook = getOpeningBook("/openings/4mvs_+90_+99.epd");
         loader = new EngineConfigLoader();
+        game = new GameService();
+        game.addListener(new GameEventPrinter(System.out, System.err));
     }
 
     @AfterEach
@@ -104,11 +107,6 @@ public class GameTest {
         List<EngineConfig> configs = loader.loadDefaults(appDir);
         EngineConfig config = configs.get(0);
 
-        game.registerLogListener(message -> {
-            System.out.print(message);
-            System.out.flush();
-        });
-
         engineService.register(config);
         UUID id1 = engineService.createPool(config.id(), poolSize);
         UUID id2 = engineService.createPool(config.id(), poolSize);
@@ -121,10 +119,6 @@ public class GameTest {
     private void register2engines(
         EngineConfig ec1, EngineConfig ec2, GameService game, EngineService engineService, int poolSize
     ) {
-        game.registerLogListener(message -> {
-            System.out.print(message);
-            System.out.flush();
-        });
 
         for (int i = 0; i < 2; i++) {
             EngineConfig config = i == 0 ? ec1 : ec2;
