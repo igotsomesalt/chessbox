@@ -1,9 +1,11 @@
 package chessbox;
 
 import java.io.OutputStream;
+import java.io.PrintStream;
 
 import chessbox.cli.command.CommandRegistry;
 import chessbox.cli.command.VersionCommand;
+import chessbox.cli.listener.EngineEventPrinter;
 import chessbox.engine.EngineRegistry;
 import chessbox.engine.EngineService;
 import chessbox.game.GameService;
@@ -25,6 +27,10 @@ public class ApplicationContext implements AutoCloseable {
         this.engineService = new EngineService(engineRegistry);
         this.gameService = new GameService();
         this.logWriter = new LogWriter(out, err);
+
+        engineService.addListener(
+            new EngineEventPrinter(new PrintStream(out), new PrintStream(err))
+        );
     }
 
     public CommandRegistry commands() {
