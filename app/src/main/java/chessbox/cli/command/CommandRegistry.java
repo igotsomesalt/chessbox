@@ -1,5 +1,6 @@
 package chessbox.cli.command;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -24,5 +25,9 @@ public class CommandRegistry {
         Command cmd = commands.get(name);
         if (cmd == null) throw new NoSuchElementException("Unknown command: " + name);
         return cmd;
+    }
+
+    public Collection<Command> getAll() {
+        return commands.values();
     }
 }
