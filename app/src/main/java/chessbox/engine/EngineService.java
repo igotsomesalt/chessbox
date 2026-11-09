@@ -3,19 +3,29 @@ package chessbox.engine;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
-
-import chessbox.App;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Consumer;
 
 public class EngineService implements AutoCloseable {
 
     private EngineRegistry registry;
     private final Map<UUID, EnginePool> pools = new HashMap<>();
+    private final List<Consumer<EngineEvent>> listeners = new CopyOnWriteArrayList<>();
 
     public EngineService(EngineRegistry registry) {
         this.registry = registry;
+    }
+
+    public void addListener(Consumer<EngineEvent> listener) {
+        listeners.add(listener);
+    }
+
+    public void removeListener(Consumer<EngineEvent> listener) {
+        listeners.remove(listener);
     }
 
     public void register(EngineConfig config) throws IllegalArgumentException {
@@ -38,18 +48,11 @@ public class EngineService implements AutoCloseable {
         EngineConfig config = registry.getConfig(engineId);
 
         EnginePool pool = new EnginePool(config, size);
-        UUID id = UUID.randomUUID();
-        String shortId = chessbox.util.UUID.shortId(id);
-        pools.put(id, pool);
+        UUID uuid = UUID.randomUUID();
+        pools.put(uuid, pool);
 
-        App.ctx.out().printf("""
-            Pool created:
-                id = %s
-                size = %d 
-            """, shortId, size
-        );
-
-        return id;
+        emit(new EngineEvent.PoolCreated(uuid, config.name(), size));
+        return uuid;
     }
 
     public void destroyPool(UUID poolId) throws NoSuchElementException, IOException {
@@ -59,7 +62,7 @@ public class EngineService implements AutoCloseable {
         }
 
         pool.close();
-        sendMessage("Pool destroyed: " + poolId);
+        emit(new EngineEvent.PoolDestroyed(poolId));
     }
 
     public void destroyPool(String poolId) throws NoSuchElementException, IllegalArgumentException, IOException {
@@ -68,7 +71,7 @@ public class EngineService implements AutoCloseable {
 
         
         pool.close();
-        sendMessage("Pool destroyed: " + poolId);
+        emit(new EngineEvent.PoolDestroyed(uuid));
     }
 
     public UciEngine acquire(UUID poolId) throws NoSuchElementException, InterruptedException {
@@ -124,7 +127,9 @@ public class EngineService implements AutoCloseable {
         }
     }
 
-    private void sendMessage(String message) {
-        App.ctx.out().println(message);
+    private void emit(EngineEvent event) {
+        for (Consumer<EngineEvent> listener : listeners) {
+            listener.accept(event);
+        }
     }
 }
