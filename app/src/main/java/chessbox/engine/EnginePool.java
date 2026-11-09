@@ -62,6 +62,12 @@ public class EnginePool implements AutoCloseable {
         }
     }
 
+    public void releaseAll() {
+        for (UciEngine engine : engines) {
+            available.offer(engine);
+        }
+    }
+
     public UUID id() {
         return id;
     }

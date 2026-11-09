@@ -79,6 +79,15 @@ public class EngineService implements AutoCloseable {
         pool.release(engine);
     }
 
+    public void releaseAll(String engineId) {
+        EnginePool pool = pools.get(engineId);
+        if (pool == null) {
+            throw new NoSuchElementException("Pool does not exist: " + engineId);
+        }
+
+        pool.releaseAll();
+    }
+
     @Override 
     public void close() throws IOException {
         try {
