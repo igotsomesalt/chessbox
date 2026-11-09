@@ -125,7 +125,7 @@ public class Game implements Callable<Game.Result>, Indentifiable<UUID> {
         return new Result(
             white, black, Outcome.DRAW, Termination.STOPPED,
             moves, startingFen, position.toFen(), startedAt, 
-            Duration.ofNanos(System.currentTimeMillis() - startNanos)
+            Duration.ofNanos(System.nanoTime() - startNanos)
         );
     }
 
