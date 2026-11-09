@@ -182,6 +182,8 @@ public class GameService implements AutoCloseable {
         for (Game game : games) {
             game.stop();
         }
+
+        sendMessage("All games have been stopped\n");
     }
 
     private void sendMessage(String message) {
