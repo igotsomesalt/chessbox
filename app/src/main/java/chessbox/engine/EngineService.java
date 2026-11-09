@@ -3,24 +3,18 @@ package chessbox.engine;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.function.Consumer;
+
+import chessbox.App;
 
 public class EngineService implements AutoCloseable {
 
     private EngineRegistry registry;
     private final Map<String, EnginePool> pools = new HashMap<>();
-    private final List<Consumer<String>> listeners = new CopyOnWriteArrayList<>();
 
     public EngineService(EngineRegistry registry) {
         this.registry = registry;
-    }
-
-    public void registerLogListener(Consumer<String> listener) {
-        listeners.add(listener);
     }
 
     public void register(EngineConfig config) throws IllegalArgumentException {
@@ -100,8 +94,6 @@ public class EngineService implements AutoCloseable {
     }
 
     private void sendMessage(String message) {
-        for (Consumer<String> listener : listeners) {
-            listener.accept(message);
-        }
+        App.ctx.out().print(message);
     }
 }
