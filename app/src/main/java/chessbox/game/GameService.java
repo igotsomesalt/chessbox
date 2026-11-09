@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
@@ -28,9 +29,11 @@ public class GameService implements AutoCloseable {
     private final Map<Boolean, PlayerProvider> playerProviders = new HashMap<>();
     private final List<Consumer<GameEvent>> listeners  = new CopyOnWriteArrayList<>();
 
-    private List<Game> games = new ArrayList<>();
+    private final List<Game> runningGames = new ArrayList<>();
+    private final MatchRegistry matches;
 
-    public GameService() {
+    public GameService(MatchRegistry matches) {
+        this.matches = matches;
     }
 
     public void registerPlayerProvider(PlayerProvider provider, boolean white) {
@@ -46,9 +49,14 @@ public class GameService implements AutoCloseable {
     }
 
     @SuppressWarnings("null")
-    public Result start(
-        int numGames, int numThreads, OpeningBook openingBook, boolean verbose
+    public Result submit(
+        UUID matchId, boolean verbose
     ) throws IllegalArgumentException, IllegalStateException, Exception {
+
+        MatchConfig match = matches.get(matchId);
+        int numGames = match.games();
+        int numThreads = match.threads();
+        OpeningBook openingBook = match.openingBook();
 
         if (numGames < 1) {
             throw new IllegalArgumentException(String.format(
@@ -170,7 +178,7 @@ public class GameService implements AutoCloseable {
     }
 
     public void stop() {
-        for (Game game : games) {
+        for (Game game : runningGames) {
             game.stop();
         }
     }
@@ -183,7 +191,7 @@ public class GameService implements AutoCloseable {
 
 	@Override
 	public void close() throws Exception {
-        for (Game game : games) {
+        for (Game game : runningGames) {
             game.stop();
         }
 
