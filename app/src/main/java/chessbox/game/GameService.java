@@ -69,9 +69,7 @@ public class GameService {
         ExecutorService executor = Executors.newFixedThreadPool(numThreads);
 
         try {
-            ExecutorCompletionService<Game.Result> completionService = new ExecutorCompletionService<>(
-                Executors.newFixedThreadPool(numThreads)
-            );
+            ExecutorCompletionService<Game.Result> completionService = new ExecutorCompletionService<>(executor);
 
             ConcurrentHashMap<String, Integer> outcomes = new ConcurrentHashMap<>();
 
