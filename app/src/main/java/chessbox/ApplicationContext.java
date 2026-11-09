@@ -1,5 +1,7 @@
 package chessbox;
 
+import java.io.OutputStream;
+
 import chessbox.cli.command.CommandRegistry;
 import chessbox.cli.command.VersionCommand;
 import chessbox.engine.EngineRegistry;
@@ -12,8 +14,9 @@ public class ApplicationContext implements AutoCloseable {
     private final EngineRegistry engineRegistry;
     private final EngineService engineService;
     private final GameService gameService;
+    private final LogWriter logWriter;
 
-    public ApplicationContext() {
+    public ApplicationContext(OutputStream out, OutputStream err) {
         this.commandRegistry = new CommandRegistry(
             new VersionCommand()
         );
@@ -21,6 +24,7 @@ public class ApplicationContext implements AutoCloseable {
         this.engineRegistry = new EngineRegistry();
         this.engineService = new EngineService(engineRegistry);
         this.gameService = new GameService();
+        this.logWriter = new LogWriter(out, err);
     }
 
     public CommandRegistry commands() {
@@ -33,6 +37,10 @@ public class ApplicationContext implements AutoCloseable {
 
     public GameService games() {
         return gameService;
+    }
+
+    public LogWriter out() {
+        return logWriter;
     }
 
     @Override
