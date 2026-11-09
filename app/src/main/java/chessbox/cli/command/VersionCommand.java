@@ -1,5 +1,6 @@
 package chessbox.cli.command;
 
+import chessbox.App;
 import chessbox.cli.Cli;
 
 public class VersionCommand implements Command {
@@ -20,7 +21,7 @@ public class VersionCommand implements Command {
             .getPackage()
             .getImplementationVersion();
 
-        System.out.println(version != null ? version : "dev");
+        App.context.out().println(version != null ? version : "dev");
 	}
 
 }
