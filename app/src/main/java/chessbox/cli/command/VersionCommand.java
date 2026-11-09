@@ -3,7 +3,7 @@ package chessbox.cli.command;
 import chessbox.App;
 import chessbox.cli.Cli;
 
-public class VersionCommand implements Command {
+public class VersionCommand extends Command {
 
 	@Override
 	public String name() {
