@@ -18,7 +18,7 @@ import java.util.function.Consumer;
 import chessbox.chess.Position;
 import chessbox.opening.OpeningBook;
 
-public class GameService {
+public class GameService implements AutoCloseable {
 
     public static record Result(
         int games, int threads, Map<String, Integer> outcomes, 
@@ -208,4 +208,17 @@ public class GameService {
             result.games / (result.duration().toNanos() / 1_000_000_000.0)
         );
     }
+
+	@Override
+	public void close() throws Exception {
+        for (Game game : games) {
+            game.stop();
+        }
+
+        for (PlayerProvider provider : playerProviders.values()) {
+            if (provider instanceof AutoCloseable p) {
+                p.close();
+            }
+        }
+	}
 }
