@@ -10,6 +10,12 @@ public class CommandRegistry {
 
     public CommandRegistry() {}
 
+    public CommandRegistry(Command... cmds) {
+        for (Command cmd : cmds) {
+            commands.put(cmd.name(), cmd);
+        }
+    }
+
     public void register(Command command) {
         commands.put(command.name(), command);
     }
