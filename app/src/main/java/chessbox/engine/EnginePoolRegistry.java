@@ -1,5 +1,7 @@
 package chessbox.engine;
 
-public class EnginePoolRegistry {
+import java.util.UUID;
 
-}
+import chessbox.util.Registry;
+
+public class EnginePoolRegistry extends Registry<UUID, EnginePool> {}
