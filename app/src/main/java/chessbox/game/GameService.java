@@ -3,7 +3,6 @@ package chessbox.game;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -26,18 +25,14 @@ public class GameService implements AutoCloseable {
         OpeningBook openingBook, Duration duration, Instant timestamp
     ) {}
 
-    private final Map<Boolean, PlayerProvider> playerProviders = new HashMap<>();
     private final List<Consumer<GameEvent>> listeners  = new CopyOnWriteArrayList<>();
 
+    private final List<PlayerProvider> playerProviders = new ArrayList<>();
     private final List<Game> runningGames = new ArrayList<>();
     private final MatchRegistry matches;
 
     public GameService(MatchRegistry matches) {
         this.matches = matches;
-    }
-
-    public void registerPlayerProvider(PlayerProvider provider, boolean white) {
-        playerProviders.put(white, provider); 
     }
 
     public void addListener(Consumer<GameEvent> listener) {
@@ -70,10 +65,8 @@ public class GameService implements AutoCloseable {
             ));
         }
 
-        if (playerProviders.size() < 2) {
-            throw new IllegalStateException(
-                String.format("Number of players must be 2, instead found %s\n", playerProviders.size())
-            );
+        if (match.p1() == null || match.p2() == null) {
+            throw new IllegalStateException("Number of players must be 2");
         }
 
         emit(new GameEvent.MatchStarted(numGames, numThreads, openingBook, Instant.now()));
@@ -92,8 +85,8 @@ public class GameService implements AutoCloseable {
 
                 Position position = openingBook.nextPosition();
 
-                PlayerProvider whiteFactory = playerProviders.get(swap);
-                PlayerProvider blackFactory = playerProviders.get(!swap);
+                PlayerProvider whiteFactory = swap ? match.p1() : match.p2();
+                PlayerProvider blackFactory = swap ? match.p2() : match.p1();
 
                 completionService.submit(() -> {
                     Player white = null;
@@ -177,9 +170,10 @@ public class GameService implements AutoCloseable {
         return result;
     }
 
-    public void stop() {
+    public void stop(UUID matchId) {
+        matches.get(matchId);
         for (Game game : runningGames) {
-            game.stop();
+            if (game.id() == matchId) game.stop();
         }
     }
 
@@ -195,7 +189,7 @@ public class GameService implements AutoCloseable {
             game.stop();
         }
 
-        for (PlayerProvider provider : playerProviders.values()) {
+        for (PlayerProvider provider : playerProviders) {
             if (provider instanceof AutoCloseable p) {
                 p.close();
             }
