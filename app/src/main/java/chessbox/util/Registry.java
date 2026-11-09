@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.Set;
 
 public abstract class Registry<ID, T extends Indentifiable<ID>> {
 
@@ -59,5 +60,9 @@ public abstract class Registry<ID, T extends Indentifiable<ID>> {
 
     public Collection<T> getAll() {
         return items.values();
+    }
+
+    public Set<ID> ids() {
+        return items.keySet();
     }
 }
