@@ -13,6 +13,11 @@ public class VersionCommand implements Command {
 	@Override
 	public String description() {
         return "Displays version";
+	}	
+    
+    @Override
+	public String usage() {
+		return "version";
 	}
 
 	@Override
