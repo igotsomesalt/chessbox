@@ -47,3 +47,11 @@ tasks.named('test') {
         showStandardStreams = true
     }
 }
+
+tasks.named('jar') {
+    manifest {
+        attributes(
+            'Implementation-Version': project.version
+        )
+    }
+}
