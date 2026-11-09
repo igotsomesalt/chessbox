@@ -37,15 +37,15 @@ public class EngineService implements AutoCloseable {
     }
 
     public EngineConfig getConfig(String engineId) throws NoSuchElementException {
-        return registry.getConfig(engineId);
+        return registry.get(engineId);
     }
 
     public Collection<EngineConfig> listEngines() {
-        return registry.getConfigs();
+        return registry.getAll();
     }
 
     public UUID createPool(String engineId, int size) throws NoSuchElementException, IOException {
-        EngineConfig config = registry.getConfig(engineId);
+        EngineConfig config = registry.get(engineId);
 
         EnginePool pool = new EnginePool(config, size);
         UUID uuid = UUID.randomUUID();
