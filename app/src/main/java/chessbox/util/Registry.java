@@ -48,7 +48,7 @@ public abstract class Registry<ID, T extends Indentifiable<ID>> {
         return item;
     }
 
-    public T get(String id) throws NoSuchElementException {
+    public T get(ID id) throws NoSuchElementException {
         T item = items.get(id);
 
         if (item == null) {
