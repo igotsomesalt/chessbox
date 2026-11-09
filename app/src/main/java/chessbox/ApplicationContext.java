@@ -6,12 +6,14 @@ import java.io.PrintStream;
 import chessbox.cli.command.CommandRegistry;
 import chessbox.cli.command.VersionCommand;
 import chessbox.cli.listener.EngineEventPrinter;
+import chessbox.engine.EnginePoolRegistry;
 import chessbox.engine.EngineRegistry;
 import chessbox.engine.EngineService;
 import chessbox.game.GameService;
 
 public class ApplicationContext implements AutoCloseable {
 
+    private final EnginePoolRegistry enginePoolRegistry;
     private final CommandRegistry commandRegistry;
     private final EngineRegistry engineRegistry;
     private final EngineService engineService;
@@ -23,8 +25,9 @@ public class ApplicationContext implements AutoCloseable {
             new VersionCommand()
         );
 
+        this.enginePoolRegistry = new EnginePoolRegistry();
         this.engineRegistry = new EngineRegistry();
-        this.engineService = new EngineService(engineRegistry);
+        this.engineService = new EngineService(engineRegistry, enginePoolRegistry);
         this.gameService = new GameService();
         this.logWriter = new LogWriter(out, err);
 
