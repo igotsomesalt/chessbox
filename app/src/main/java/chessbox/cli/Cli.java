@@ -1,5 +1,6 @@
 package chessbox.cli;
 
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Scanner;
 
@@ -11,9 +12,9 @@ public class Cli {
     private final Scanner scanner;
     private boolean running = false;
 
-    public Cli(CommandRegistry registry) {
+    public Cli(InputStream in, CommandRegistry registry) {
         this.registry = registry;
-        this.scanner = new Scanner(System.in);
+        this.scanner = new Scanner(in);
     }
 
     private void printWelcome() {
