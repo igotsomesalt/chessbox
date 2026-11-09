@@ -1,15 +1,15 @@
 package chessbox.util;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class Registry<ID, T extends Indentifiable<ID>> {
 
-    Map<ID, T> items;
+    private final Map<ID, T> items = new ConcurrentHashMap<>();
 
     public Registry(Collection<? extends T> items) {
         this();
@@ -20,14 +20,9 @@ public abstract class Registry<ID, T extends Indentifiable<ID>> {
 
     @SafeVarargs
     public Registry(T... items) {
-        this();
         for (T item : items) {
             register(item);
         }
-    }
-
-    public Registry() {
-        items = new HashMap<>();
     }
 
     public void register(T item) throws IllegalArgumentException {
