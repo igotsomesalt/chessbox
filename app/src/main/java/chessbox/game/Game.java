@@ -6,12 +6,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.Callable;
 
 import chessbox.chess.Position;
 import chessbox.chess.UciMoveConverter;
+import chessbox.util.Indentifiable;
 
-public class Game implements Callable<Game.Result> {
+public class Game implements Callable<Game.Result>, Indentifiable<UUID> {
 
     public static record Result(
         Player white, Player black, Outcome outcome, Termination termination, List<String> moves, String startingFen, String endingFen, 
@@ -45,6 +47,8 @@ public class Game implements Callable<Game.Result> {
     private final String startingFen;
     private final Map<Long, Integer> repetitions;
 
+    private final UUID id = UUID.randomUUID();
+
     private volatile boolean running = true;
 
     public Game(Position startingPosition, Player white, Player black) {
@@ -59,6 +63,12 @@ public class Game implements Callable<Game.Result> {
     public void stop() {
         running = false;
     }
+
+    
+	@Override
+	public UUID id() {
+        return id;
+	}
 
     @Override
     public Game.Result call() throws GameRuntimeException {

@@ -7,7 +7,9 @@ import java.util.UUID;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
-public class EnginePool implements AutoCloseable {
+import chessbox.util.Indentifiable;
+
+public class EnginePool implements AutoCloseable, Indentifiable<UUID> {
 
     private final BlockingQueue<UciEngine> available;
     private final List<UciEngine> engines;
@@ -68,6 +70,7 @@ public class EnginePool implements AutoCloseable {
         }
     }
 
+    @Override 
     public UUID id() {
         return id;
     }
