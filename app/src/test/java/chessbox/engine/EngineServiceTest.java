@@ -19,7 +19,7 @@ public class EngineServiceTest {
 
     @BeforeEach
     void setUp() throws IOException {
-        engineService = new EngineService(new EngineRegistry());
+        engineService = new EngineService(new EngineRegistry(), new EnginePoolRegistry());
 
         Path appDir = Path.of(
             System.getProperty("user.dir")
