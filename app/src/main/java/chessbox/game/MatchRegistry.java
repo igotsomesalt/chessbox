@@ -1,3 +1,7 @@
 package chessbox.game;
 
-public class GameRegistry {}
+import java.util.UUID;
+
+import chessbox.util.Registry;
+
+public class MatchRegistry extends Registry<UUID, MatchConfig> {}
