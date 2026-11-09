@@ -1,0 +1,5 @@
+package chessbox;
+
+class AppTest {
+
+}
