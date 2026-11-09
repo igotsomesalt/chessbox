@@ -98,10 +98,24 @@ public class GameTest {
         return openingBook;
     }
 
-    private void register2stockfishs(GameService game, EngineService engineService, int poolSize) {
+    private void register2stockfishs(GameService game, EngineService engineService, int poolSize) throws Exception {
         EngineConfig config1 = new EngineConfig("0", "Stockfish", Path.of("../engines/stockfish.exe"));
         EngineConfig config2 = new EngineConfig("1", "Stockfish", Path.of("../engines/stockfish.exe"));
         register2engines(config1, config2, game, engineService, poolSize);
+
+        game.registerLogListener(message -> {
+            System.out.print(message);
+            System.out.flush();
+        });
+
+        engineService.register(config1);
+        engineService.register(config2);
+        engineService.createPool(config1.id(), poolSize);
+        engineService.createPool(config2.id(), poolSize);
+        PlayerProvider playerProvider1 = new EnginePoolPlayerProvider(config1.id(), engineService);
+        PlayerProvider playerProvider2 = new EnginePoolPlayerProvider(config2.id(), engineService);
+        game.registerPlayerProvider(playerProvider1, true);
+        game.registerPlayerProvider(playerProvider2, false);
     }
 
     private void register2engines(
@@ -122,7 +136,6 @@ public class GameTest {
             }
             catch (Exception e) {
                 System.out.println(e.getMessage());
-                System.out.println(e.getStackTrace());
                 return;
             }
             game.registerPlayerProvider(playerProvider, i == 0);
