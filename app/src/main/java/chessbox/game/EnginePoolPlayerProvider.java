@@ -6,7 +6,7 @@ import java.util.UUID;
 
 import chessbox.engine.EngineService;
 
-public class EnginePoolPlayerProvider implements PlayerProvider {
+public class EnginePoolPlayerProvider implements PlayerProvider, AutoCloseable {
     private EngineService engineService;
     private String engineId;
     private UUID playerId;
@@ -35,4 +35,9 @@ public class EnginePoolPlayerProvider implements PlayerProvider {
             throw new IllegalArgumentException("Player is not instance of EnginePlayer");
         }
 	}
+
+    @Override 
+    public void close() {
+        engineService.releaseAll(engineId);
+    }
 }
