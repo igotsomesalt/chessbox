@@ -21,7 +21,7 @@ public class VersionCommand implements Command {
             .getPackage()
             .getImplementationVersion();
 
-        App.context.out().println(version != null ? version : "dev");
+        App.ctx.out().println(version != null ? version : "dev");
 	}
 
 }
