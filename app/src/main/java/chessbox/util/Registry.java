@@ -65,4 +65,8 @@ public abstract class Registry<ID, T extends Indentifiable<ID>> {
     public Set<ID> ids() {
         return items.keySet();
     }
+
+    public void clear() {
+        items.clear();
+    }
 }
