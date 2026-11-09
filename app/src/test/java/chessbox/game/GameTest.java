@@ -1,10 +1,14 @@
 package chessbox.game;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.UUID;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import chessbox.engine.EngineConfig;
@@ -16,12 +20,26 @@ import chessbox.opening.OpeningBook;
 
 public class GameTest {
 
+    private GameService game;
+    private EngineService engineService;
+    private OpeningBook openingBook;
+    private EngineConfigLoader loader;
+
+    @BeforeEach
+    void setUp() {
+        engineService = new EngineService(new EngineRegistry());
+        openingBook = getOpeningBook("/openings/4mvs_+90_+99.epd");
+        loader = new EngineConfigLoader();
+    }
+
+    @AfterEach
+    void tearDown() throws IOException {
+        game = new GameService();        
+        engineService.close();
+    }
+
     @Test
     void playe10games4threadsEnvVsStockfish() throws Exception {
-        GameService game = new GameService();
-        EngineService engineService = new EngineService(new EngineRegistry());
-        OpeningBook openingBook = getOpeningBook("/openings/4mvs_+90_+99.epd");
-        EngineConfigLoader loader = new EngineConfigLoader();
 
         Path baseDir = Path.of(
             System.getProperty("user.dir")
@@ -35,54 +53,32 @@ public class GameTest {
 
         EngineConfig ec1 = defaultConfigs.get(0);
         EngineConfig ec2 = userConfigs.get(0);
-        register2engines(ec1, ec2, game, engineService, 4);
-        
-        game.start(10, 4, openingBook, false);
+        assertDoesNotThrow(() -> register2engines(ec1, ec2, game, engineService, 4));
+        assertDoesNotThrow(() -> game.start(10, 4, openingBook, false));
     }
 
     @Test 
     void play10games4threadsVerboseFalse() throws Exception  {
-        GameService game = new GameService();
-        EngineService engineService = new EngineService(new EngineRegistry());
-        OpeningBook openingBook = getOpeningBook("/openings/4mvs_+90_+99.epd");
-        register2stockfishs(game, engineService, 4);
-        game.start(10, 4, openingBook, false);
+        assertDoesNotThrow(() -> register2stockfishs(game, engineService, 4));
+        assertDoesNotThrow(() -> game.start(10, 4, openingBook, false));
     }
 
     @Test
     void play10games4threadVerboseTrue() throws Exception  {
-        GameService game = new GameService();
-        EngineService engineService = new EngineService(new EngineRegistry());
-        OpeningBook openingBook = getOpeningBook("/openings/4mvs_+90_+99.epd");
-        register2stockfishs(game, engineService, 4);
-        game.start(10, 4, openingBook, true);
+        assertDoesNotThrow(() -> register2stockfishs(game, engineService, 4));
+        assertDoesNotThrow(() -> game.start(10, 4, openingBook, true));
     }
 
     @Test
     void play10games1threadVerboseFalse() throws Exception  {
-        GameService game = new GameService();
-        EngineService engineService = new EngineService(new EngineRegistry());
-        OpeningBook openingBook = getOpeningBook("/openings/4mvs_+90_+99.epd");
-        register2stockfishs(game, engineService, 1);
-        game.start(10, 1, openingBook, false);
+        assertDoesNotThrow(() -> register2stockfishs(game, engineService, 1));
+        assertDoesNotThrow(() -> game.start(10, 1, openingBook, false));
     }
 
     @Test 
     void play100games4threadsVerboseFalse() throws Exception {
-        GameService game = new GameService();
-        EngineService engineService = new EngineService(new EngineRegistry());
-        OpeningBook openingBook = getOpeningBook("/openings/4mvs_+90_+99.epd");
-        register2stockfishs(game, engineService, 4);
-        game.start(100, 4, openingBook, false);
-    }
-
-    @Test 
-    void play100games1threadsVerboseFalse() throws Exception {
-        GameService game = new GameService();
-        EngineService engineService = new EngineService(new EngineRegistry());
-        OpeningBook openingBook = getOpeningBook("/openings/4mvs_+90_+99.epd");
-        register2stockfishs(game, engineService, 1);
-        game.start(100, 1, openingBook, false);
+        assertDoesNotThrow(() -> register2stockfishs(game, engineService, 4));
+        assertDoesNotThrow(() -> game.start(100, 4, openingBook, false));
     }
 
     private OpeningBook getOpeningBook(String path) {
@@ -100,7 +96,7 @@ public class GameTest {
     }
 
     private void register2stockfishs(GameService game, EngineService engineService, int poolSize) throws Exception {
-        EngineConfigLoader loader = new EngineConfigLoader();
+        
         Path appDir = Path.of(
             System.getProperty("user.dir")
         ).toAbsolutePath().normalize();

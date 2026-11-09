@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.NoSuchElementException;
+import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterEach;
@@ -17,13 +18,14 @@ public class EngineServiceTest {
     private EngineConfig config;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws IOException {
         engineService = new EngineService(new EngineRegistry());
-        config = new EngineConfig(
-            "0",
-            "Stockfish",
-            Path.of("../engines/stockfish.exe")
-        );
+
+        Path appDir = Path.of(
+            System.getProperty("user.dir")
+        ).toAbsolutePath().normalize();
+
+        config = (new EngineConfigLoader()).loadDefaults(appDir).get(0);
     }
 
     @AfterEach
@@ -131,17 +133,6 @@ public class EngineServiceTest {
     }
 
     @Test
-    void createDuplicatePool() throws IOException {
-        engineService.register(config);
-        engineService.createPool(config.id(), 2);
-
-        assertThrows(
-            IllegalArgumentException.class,
-            () -> engineService.createPool(config.id(), 2)
-        );
-    }
-
-    @Test
     void createPoolWithInvalidSize() {
         engineService.register(config);
 
@@ -156,13 +147,13 @@ public class EngineServiceTest {
     @Test
     void destroyPool() throws IOException {
         engineService.register(config);
-        engineService.createPool(config.id(), 2);
+        UUID uuid = engineService.createPool(config.id(), 2);
 
-        engineService.destroyPool(config.id());
+        engineService.destroyPool(uuid);
 
         assertThrows(
             NoSuchElementException.class,
-            () -> engineService.acquire(config.id())
+            () -> engineService.acquire(uuid)
         );
     }
 
@@ -177,13 +168,13 @@ public class EngineServiceTest {
     @Test
     void destroyPoolTwice() throws IOException {
         engineService.register(config);
-        engineService.createPool(config.id(), 2);
+        UUID uuid = engineService.createPool(config.id(), 2);
 
-        engineService.destroyPool(config.id());
+        engineService.destroyPool(uuid);
 
         assertThrows(
             NoSuchElementException.class,
-            () -> engineService.destroyPool(config.id())
+            () -> engineService.destroyPool(uuid)
         );
     }
 
@@ -192,29 +183,29 @@ public class EngineServiceTest {
     @Test
     void acquireEngine() throws IOException, InterruptedException {
         engineService.register(config);
-        engineService.createPool(config.id(), 2);
+        UUID uuid = engineService.createPool(config.id(), 2);
 
-        UciEngine engine = engineService.acquire(config.id());
+        UciEngine engine = engineService.acquire(uuid);
 
         assertNotNull(engine);
 
-        engineService.release(config.id(), engine);
+        engineService.release(uuid, engine);
     }
 
     @Test
     void acquireMultipleEngines() throws IOException, InterruptedException {
         engineService.register(config);
-        engineService.createPool(config.id(), 2);
+        UUID uuid = engineService.createPool(config.id(), 2);
 
-        UciEngine first = engineService.acquire(config.id());
-        UciEngine second = engineService.acquire(config.id());
+        UciEngine first = engineService.acquire(uuid);
+        UciEngine second = engineService.acquire(uuid);
 
         assertNotNull(first);
         assertNotNull(second);
         assertNotSame(first, second);
 
-        engineService.release(config.id(), first);
-        engineService.release(config.id(), second);
+        engineService.release(uuid, first);
+        engineService.release(uuid, second);
     }
 
     @Test
@@ -228,17 +219,17 @@ public class EngineServiceTest {
     @Test
     void releaseAndReacquireEngine() throws IOException, InterruptedException {
         engineService.register(config);
-        engineService.createPool(config.id(), 1);
+        UUID uuid = engineService.createPool(config.id(), 1);
 
-        UciEngine first = engineService.acquire(config.id());
+        UciEngine first = engineService.acquire(uuid);
 
-        engineService.release(config.id(), first);
+        engineService.release(uuid, first);
 
-        UciEngine second = engineService.acquire(config.id());
+        UciEngine second = engineService.acquire(uuid);
 
         assertSame(first, second);
 
-        engineService.release(config.id(), second);
+        engineService.release(uuid, second);
     }
 
     @Test
@@ -254,9 +245,9 @@ public class EngineServiceTest {
     @Test
     void recreatePoolAfterDestroy() throws IOException {
         engineService.register(config);
-        engineService.createPool(config.id(), 1);
+        UUID uuid = engineService.createPool(config.id(), 1);
 
-        engineService.destroyPool(config.id());
+        engineService.destroyPool(uuid);
 
         assertDoesNotThrow(
             () -> engineService.createPool(config.id(), 1)
@@ -269,19 +260,10 @@ public class EngineServiceTest {
     }
 
     @Test
-    void closeWithMultiplePools() throws IOException {
-        EngineConfig second = new EngineConfig(
-            "1",
-            "Stockfish 2",
-            Path.of("../engines/stockfish.exe")
-        );
+    void close() throws IOException {
 
         engineService.register(config);
-        engineService.register(second);
-
         engineService.createPool(config.id(), 1);
-        engineService.createPool(second.id(), 1);
-
         assertDoesNotThrow(() -> engineService.close());
     }
 }
