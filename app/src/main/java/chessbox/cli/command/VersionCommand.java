@@ -12,7 +12,7 @@ public class VersionCommand implements Command {
 
 	@Override
 	public String description() {
-        return "Displays version";
+        return "Display application version";
 	}	
     
     @Override
