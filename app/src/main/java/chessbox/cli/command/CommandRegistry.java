@@ -1,33 +1,13 @@
 package chessbox.cli.command;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.NoSuchElementException;
+import chessbox.util.Registry;
 
-public class CommandRegistry {
+public class CommandRegistry extends Registry<String, Command> {
 
-    private final Map<String, Command> commands = new HashMap<>();
-
-    public CommandRegistry() {}
-
-    public CommandRegistry(Command... cmds) {
-        for (Command cmd : cmds) {
-            commands.put(cmd.name(), cmd);
+    public CommandRegistry(Command... commands) {
+        super();
+        for (Command cmd : commands) {
+            register(cmd);
         }
-    }
-
-    public void register(Command command) {
-        commands.put(command.name(), command);
-    }
-
-    public Command get(String name) {
-        Command cmd = commands.get(name);
-        if (cmd == null) throw new NoSuchElementException("Unknown command: " + name);
-        return cmd;
-    }
-
-    public Collection<Command> getAll() {
-        return commands.values();
     }
 }

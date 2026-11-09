@@ -2,7 +2,7 @@ package chessbox.cli.command;
 
 import chessbox.App;
 
-public class HelpCommand implements Command {
+public class HelpCommand extends Command {
 
 	@Override
 	public String name() {
