@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import chessbox.cli.token.Token;
 import chessbox.util.Indentifiable;
 
 public abstract class Command implements Indentifiable<String> {
@@ -28,5 +29,5 @@ public abstract class Command implements Indentifiable<String> {
         return options;
     }
 
-    public abstract void execute(String[] args) throws Exception;
+    public abstract void execute(List<Token> args) throws Exception;
 }
