@@ -39,6 +39,10 @@ application {
     mainClass = 'chessbox.App'
 }
 
+tasks.named('run', JavaExec) {
+    systemProperty 'chessbox.home', rootProject.projectDir.absolutePath
+}
+
 tasks.named('test') {
     // Use JUnit Platform for unit tests.
     useJUnitPlatform()
