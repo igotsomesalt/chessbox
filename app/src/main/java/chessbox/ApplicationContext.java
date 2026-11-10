@@ -4,7 +4,9 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 
 import chessbox.cli.command.CommandRegistry;
+import chessbox.cli.command.HelpCommand;
 import chessbox.cli.command.VersionCommand;
+import chessbox.cli.command.pool.PoolCommand;
 import chessbox.cli.listener.EngineEventPrinter;
 import chessbox.engine.EnginePoolRegistry;
 import chessbox.engine.EngineRegistry;
@@ -24,7 +26,9 @@ public class ApplicationContext implements AutoCloseable {
 
     public ApplicationContext(OutputStream out, OutputStream err) {
         this.commandRegistry = new CommandRegistry(
-            new VersionCommand()
+            new VersionCommand(),
+            new HelpCommand(),
+            new PoolCommand()
         );
 
         this.enginePoolRegistry = new EnginePoolRegistry();
