@@ -204,11 +204,9 @@ public class GameTest {
         UUID id1 = engineService.createPool(config.id(), threads);
         UUID id2 = engineService.createPool(config.id(), threads);
 
-        PlayerProvider p1 =
-            new EnginePoolPlayerProvider(id1, engineService);
+        PlayerProvider p1 = new EnginePoolPlayerProvider(id1, engineService);
 
-        PlayerProvider p2 =
-            new EnginePoolPlayerProvider(id2, engineService);
+        PlayerProvider p2 = new EnginePoolPlayerProvider(id2, engineService);
 
         return registerMatch(games, threads, p1, p2);
     }

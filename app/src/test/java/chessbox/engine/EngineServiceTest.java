@@ -40,7 +40,7 @@ public class EngineServiceTest {
         engineService.register(config);
 
         assertTrue(
-            engineService.listEngines().stream()
+            engineService.listEngineConfigs().stream()
                 .anyMatch(e -> config.id().equals(e.id()))
         );
     }
@@ -66,7 +66,7 @@ public class EngineServiceTest {
         engineService.register(config);
         engineService.register(second);
 
-        assertEquals(2, engineService.listEngines().size());
+        assertEquals(2, engineService.listEngineConfigs().size());
     }
 
     // UNREGISTRATION
@@ -76,7 +76,7 @@ public class EngineServiceTest {
         engineService.register(config);
         engineService.unregister(config.id());
 
-        assertTrue(engineService.listEngines().isEmpty());
+        assertTrue(engineService.listEngineConfigs().isEmpty());
     }
 
     @Test
@@ -109,8 +109,8 @@ public class EngineServiceTest {
     }
 
     @Test
-    void listEnginesInitiallyEmpty() {
-        assertTrue(engineService.listEngines().isEmpty());
+    void listEngineConfigsInitiallyEmpty() {
+        assertTrue(engineService.listEngineConfigs().isEmpty());
     }
 
     // POOL CREATION
