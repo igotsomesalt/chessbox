@@ -39,8 +39,12 @@ public class EngineService implements AutoCloseable {
         return engines.get(engineId);
     }
 
-    public Collection<EngineConfig> listEngines() {
+    public Collection<EngineConfig> listEngineConfigs() {
         return engines.getAll();
+    }
+
+    public Collection<EnginePool> listEnginePools() {
+        return pools.getAll();
     }
 
     public UUID createPool(String engineId, int size) throws NoSuchElementException, IOException {
