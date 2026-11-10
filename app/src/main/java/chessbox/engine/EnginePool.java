@@ -46,6 +46,10 @@ public class EnginePool implements AutoCloseable, Indentifiable<UUID> {
         }
     }
 
+    public int size() {
+        return engines.size();
+    }
+
     public UciEngine acquire() throws InterruptedException {
         return available.take();
     }
