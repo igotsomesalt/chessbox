@@ -13,9 +13,7 @@ public abstract class Registry<ID, T extends Indentifiable<ID>> {
 
     public Registry(Collection<? extends T> items) {
         this();
-        for (T item : items) {
-            register(item);
-        }
+        registerAll(items);
     }
 
     @SafeVarargs
@@ -30,6 +28,12 @@ public abstract class Registry<ID, T extends Indentifiable<ID>> {
 
         if (items.putIfAbsent(item.id(), item) != null) {
             throw new IllegalArgumentException("ID already registered: " + item.id());
+        }
+    }
+
+    public void registerAll(Collection<? extends T> items) throws IllegalArgumentException {
+        for (T item : items) {
+            register(item);
         }
     }
 
