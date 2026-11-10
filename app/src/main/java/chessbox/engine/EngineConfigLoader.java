@@ -60,7 +60,7 @@ public class EngineConfigLoader {
         String os = System.getProperty("os.name").toLowerCase();
 
         String platform = os.contains("win") ? "windows"
-            : os.contains("mac") ? "mac"
+            : os.contains("mac") ? "macos"
             : "linux";
 
         return file.engines().stream()
