@@ -1,7 +1,10 @@
 package chessbox.cli.command;
 
+import java.util.List;
+
 import chessbox.App;
 import chessbox.cli.Cli;
+import chessbox.cli.token.Token;
 
 public class VersionCommand extends Command {
 
@@ -21,7 +24,9 @@ public class VersionCommand extends Command {
 	}
 
 	@Override
-	public void execute(String[] args) throws Exception {
+	public void execute(List<Token> args) throws Exception {
+        if (args.size() == 0) throw new IllegalArgumentException("Arguments out of bounds");
+
         String version = Cli.class
             .getPackage()
             .getImplementationVersion();

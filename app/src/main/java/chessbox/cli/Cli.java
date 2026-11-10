@@ -1,11 +1,13 @@
 package chessbox.cli;
 
 import java.io.InputStream;
-import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
 import chessbox.cli.command.Command;
 import chessbox.cli.command.CommandRegistry;
+import chessbox.cli.token.Token;
+import chessbox.cli.token.Tokenizer;
 
 public class Cli {
     private CommandRegistry registry;
@@ -54,9 +56,10 @@ public class Cli {
             }
 
             try {
-                String[] tokens = input.split(" ");
-                Command command = registry.get(tokens[0]);
-                command.execute(Arrays.copyOfRange(tokens, 1, tokens.length));
+                List<Token> tokens = Tokenizer.tokenize(input);
+                Token dispatch = tokens.get(0);
+                Command command = registry.get(dispatch.lexeme());
+                command.execute(tokens.subList(0, tokens.size()));
             } 
             catch (Exception e) {
                 System.err.println(e.getMessage());

@@ -1,6 +1,9 @@
 package chessbox.cli.command;
 
+import java.util.List;
+
 import chessbox.App;
+import chessbox.cli.token.Token;
 
 public class HelpCommand extends Command {
 
@@ -20,9 +23,9 @@ public class HelpCommand extends Command {
     }
 
 	@Override
-	public void execute(String[] args) throws Exception {
+	public void execute(List<Token> args) throws Exception {
 
-        if (args.length == 0) {
+        if (args.size() == 0) {
             App.ctx.out().print("""
                 Chessbox - An engine simulation and general chess tool.
 
@@ -45,8 +48,10 @@ public class HelpCommand extends Command {
             App.ctx.out().println("\nRun 'help <command> for more information.");
         }
 
-        if (args.length == 1) {
-            App.ctx.out().println(HelpFormatter.format(App.ctx.commands().get(args[0])));
+        if (args.size() == 1) {
+            App.ctx.out().println(HelpFormatter.format(App.ctx.commands().get(args.get(0).lexeme())));
         }
-	}
+
+        else throw new IllegalArgumentException("Arguments out of bounds");
+	}  
 }
