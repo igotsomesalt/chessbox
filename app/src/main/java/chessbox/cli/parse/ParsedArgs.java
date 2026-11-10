@@ -1,12 +1,11 @@
 package chessbox.cli.parse;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import chessbox.cli.token.Token;
 
-public record ParsedArgs(List<Token> positionals, Map<String, Token> options, Set<String> flags) {
+public record ParsedArgs(Map<String, Token> positionals, Map<String, Token> options, Set<String> flags) {
     public Token option(String name) {
         return options.get(name);
     }
@@ -15,7 +14,7 @@ public record ParsedArgs(List<Token> positionals, Map<String, Token> options, Se
         return flags.contains(name);
     }
 
-    public Token positional(int index) {
-        return positionals.get(index);
+    public Token positional(String name) {
+        return positionals.get(name);
     }
 }
