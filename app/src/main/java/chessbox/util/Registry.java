@@ -37,6 +37,12 @@ public abstract class Registry<ID, T extends Indentifiable<ID>> {
         }
     }
 
+    public void registerAll(T... items) throws IllegalArgumentException {
+        for (T item : items) {
+            register(item);
+        }
+    }
+
     public T unregister(ID id) {
         T item = items.remove(id);
 
