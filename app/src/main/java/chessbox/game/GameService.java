@@ -5,6 +5,7 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CancellationException;
@@ -355,6 +356,11 @@ public class GameService implements AutoCloseable {
     }
 
     private void validate(MatchConfig config) {
+
+        if (config == null) {
+            throw new NoSuchElementException("Match not found");
+        }
+
         if (config.games() > MAX_GAMES) {
             throw new IllegalArgumentException("Number of games exceeds game limit of " + MAX_GAMES);
         }

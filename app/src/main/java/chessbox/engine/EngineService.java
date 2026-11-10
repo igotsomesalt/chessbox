@@ -36,7 +36,9 @@ public class EngineService implements AutoCloseable {
     }
 
     public EngineConfig getConfig(String engineId) throws NoSuchElementException {
-        return engines.get(engineId);
+        EngineConfig config = engines.get(engineId);
+        if (config == null) throw new NoSuchElementException("Engine config not found");
+        return config;
     }
 
     public Collection<EngineConfig> listEngineConfigs() {
@@ -74,31 +76,37 @@ public class EngineService implements AutoCloseable {
 
     public UciEngine acquire(UUID poolId) throws NoSuchElementException, InterruptedException {
         EnginePool pool = pools.get(poolId);
+        if (pool == null) throw new NoSuchElementException("Pool not found");
         return pool.acquire();
     }
 
     public UciEngine acquire(String poolId) throws NoSuchElementException, InterruptedException {
         EnginePool pool = pools.get(chessbox.util.UUID.findKey(poolId, pools.ids()));
+        if (pool == null) throw new NoSuchElementException("Pool not found");
         return pool.acquire();
     }
 
     public void release(UUID poolId, UciEngine engine) throws NoSuchElementException, IllegalArgumentException, IllegalStateException {
         EnginePool pool = pools.get(poolId);
+        if (pool == null) throw new NoSuchElementException("Pool not found");
         pool.release(engine);
     }
 
     public void release(String poolId, UciEngine engine) throws NoSuchElementException, IllegalArgumentException, IllegalStateException { 
         EnginePool pool = pools.get(chessbox.util.UUID.findKey(poolId, pools.ids()));
+        if (pool == null) throw new NoSuchElementException("Pool not found");
         pool.release(engine);
     }
 
     public void releaseAll(UUID poolId) throws NoSuchElementException, IllegalArgumentException {
         EnginePool pool = pools.get(poolId);
+        if (pool == null) throw new NoSuchElementException("Pool not found");
         pool.releaseAll();
     }
 
     public void releaseAll(String poolId) throws NoSuchElementException, IllegalArgumentException {
         EnginePool pool = pools.get(chessbox.util.UUID.findKey(poolId, pools.ids()));
+        if (pool == null) throw new NoSuchElementException("Pool not found");
         pool.releaseAll();
     }
 
