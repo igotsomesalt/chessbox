@@ -6,6 +6,7 @@ import java.util.Scanner;
 
 import chessbox.cli.command.Command;
 import chessbox.cli.command.CommandRegistry;
+import chessbox.cli.parse.ParseException;
 import chessbox.cli.parse.UnknownCommandException;
 import chessbox.cli.token.Token;
 import chessbox.cli.token.Tokenizer;
@@ -57,13 +58,20 @@ public class Cli {
                 continue;
             }
 
+            Command command = null;
+
             try {
                 List<Token> tokens = Tokenizer.tokenize(input);
                 Token dispatch = tokens.get(0);
-                Command command = registry.get(dispatch.lexeme());
+                command = registry.get(dispatch.lexeme());
                 if (command == null) throw new UnknownCommandException(input);
                 command.execute(tokens.subList(1, tokens.size()));
             } 
+            catch (ParseException e) {
+                CliMain.ctx.out().println(e.getMessage());
+                if (command != null) CliMain.ctx.out().println(command.usage());
+            }
+
             catch (Exception e) {
                 System.err.println(e.getMessage());
             }
