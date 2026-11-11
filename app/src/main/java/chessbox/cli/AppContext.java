@@ -5,7 +5,6 @@ import java.io.PrintStream;
 import java.nio.file.Path;
 import java.util.List;
 
-import chessbox.LogWriter;
 import chessbox.cli.command.CommandRegistry;
 import chessbox.cli.command.global.ExitCommand;
 import chessbox.cli.command.global.HelpCommand;
@@ -20,6 +19,7 @@ import chessbox.engine.EngineRegistry;
 import chessbox.engine.EngineService;
 import chessbox.game.GameService;
 import chessbox.game.MatchRegistry;
+import chessbox.util.LogWriter;
 
 public class AppContext implements AutoCloseable {
 

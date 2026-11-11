@@ -1,4 +1,4 @@
-package chessbox;
+package chessbox.util;
 
 import java.io.OutputStream;
 import java.io.PrintStream;
