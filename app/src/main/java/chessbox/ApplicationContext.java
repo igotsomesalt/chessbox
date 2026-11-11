@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.util.List;
 
 import chessbox.cli.command.CommandRegistry;
+import chessbox.cli.command.global.ExitCommand;
 import chessbox.cli.command.global.HelpCommand;
 import chessbox.cli.command.global.VersionCommand;
 import chessbox.cli.command.pool.PoolCommand;
@@ -36,6 +37,7 @@ public class ApplicationContext implements AutoCloseable {
             this.commandRegistry = new CommandRegistry(
             new VersionCommand(),
             new HelpCommand(),
+            new ExitCommand(),
             new PoolCommand()
         );
         

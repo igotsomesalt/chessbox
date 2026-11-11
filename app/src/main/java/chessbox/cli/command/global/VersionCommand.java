@@ -1,9 +1,10 @@
-package chessbox.cli.command;
+package chessbox.cli.command.global;
 
 import java.util.List;
 
 import chessbox.App;
 import chessbox.cli.Cli;
+import chessbox.cli.command.Command;
 import chessbox.cli.token.Token;
 
 public class VersionCommand extends Command {
