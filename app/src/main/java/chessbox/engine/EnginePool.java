@@ -11,6 +11,7 @@ import chessbox.util.Indentifiable;
 
 public class EnginePool implements AutoCloseable, Indentifiable<UUID> {
 
+    private final EngineConfig config;
     private final BlockingQueue<UciEngine> available;
     private final List<UciEngine> engines;
     private UUID id = UUID.randomUUID();
@@ -23,6 +24,7 @@ public class EnginePool implements AutoCloseable, Indentifiable<UUID> {
             );
         }
 
+        this.config = config;
         available = new ArrayBlockingQueue<>(size);
         engines = new ArrayList<>(size);
 
@@ -44,6 +46,14 @@ public class EnginePool implements AutoCloseable, Indentifiable<UUID> {
             close();
             throw e;
         }
+    }
+
+    public int available() {
+        return available.size();
+    }
+
+    public EngineConfig config() {
+        return config;
     }
 
     public int size() {
