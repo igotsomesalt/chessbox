@@ -7,8 +7,8 @@ import java.nio.charset.StandardCharsets;
 import org.junit.jupiter.api.Test;
 
 import chessbox.cli.command.CommandRegistry;
-import chessbox.cli.command.HelpCommand;
-import chessbox.cli.command.VersionCommand;
+import chessbox.cli.command.global.HelpCommand;
+import chessbox.cli.command.global.VersionCommand;
 
 public class CliTest {
 

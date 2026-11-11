@@ -1,8 +1,10 @@
-package chessbox.cli.command;
+package chessbox.cli.command.global;
 
 import java.util.List;
 
 import chessbox.App;
+import chessbox.cli.command.Command;
+import chessbox.cli.command.HelpFormatter;
 import chessbox.cli.parse.CommandParser;
 import chessbox.cli.parse.ParsedArgs;
 import chessbox.cli.parse.PositionalSpec;
