@@ -27,7 +27,7 @@ public abstract class Registry<ID, T extends Indentifiable<ID>> {
         Objects.requireNonNull(item, "Item cannot be null");
 
         if (items.putIfAbsent(item.id(), item) != null) {
-            throw new IllegalArgumentException("ID already registered: " + item.id());
+            throw new IllegalArgumentException("Item already registered: " + item.id());
         }
     }
 
