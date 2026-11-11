@@ -13,13 +13,7 @@ public class Tokenizer {
         List<String> tokens = Arrays.asList(command.split(" "));
         List<Token> newTokens = new ArrayList<>();
 
-        for (int i = 0; i <= tokens.size(); i++) {
-
-            if (i == tokens.size()) {
-                newTokens.add(new Token(Token.Type.ENDLINE, ""));
-                break;
-            }
-
+        for (int i = 0; i < tokens.size(); i++) {
             String token = tokens.get(i);
             if (isNumber(token)) newTokens.add(new Token(Token.Type.NUMBER, token));
             else if (isOption(token)) newTokens.add(new Token(Token.Type.OPTION, token));
