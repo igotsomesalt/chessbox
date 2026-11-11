@@ -6,8 +6,8 @@ import java.nio.file.Path;
 import java.util.List;
 
 import chessbox.cli.command.CommandRegistry;
-import chessbox.cli.command.HelpCommand;
-import chessbox.cli.command.VersionCommand;
+import chessbox.cli.command.global.HelpCommand;
+import chessbox.cli.command.global.VersionCommand;
 import chessbox.cli.command.pool.PoolCommand;
 import chessbox.cli.listener.EngineEventPrinter;
 import chessbox.cli.listener.GameEventPrinter;
@@ -30,6 +30,7 @@ public class ApplicationContext implements AutoCloseable {
     private final LogWriter logWriter;
 
     boolean setup = true;
+    boolean running = true;
 
     public ApplicationContext(Path appDir, OutputStream out, OutputStream err) {
             this.commandRegistry = new CommandRegistry(
@@ -80,6 +81,10 @@ public class ApplicationContext implements AutoCloseable {
 
     public LogWriter out() {
         return logWriter;
+    }
+
+    public void exit() {
+        running = false;
     }
 
     @Override
