@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import chessbox.App;
+import chessbox.cli.CliMain;
 import chessbox.cli.command.Command;
 import chessbox.cli.parse.CommandParser;
 import chessbox.cli.parse.OptionSpec;
@@ -45,7 +45,7 @@ public class LsCommand extends Command {
 		boolean quiet = parsed.hasFlag("quiet");
 		boolean noTrunc = parsed.hasFlag("no-trunc");
 
-		Collection<EnginePool> pools = App.ctx.engines().listEnginePools();
+		Collection<EnginePool> pools = CliMain.ctx.engines().listEnginePools();
 
 		if (parsed.option("engine") != null) {
 			String engine = parsed.option("engine").lexeme();
@@ -57,7 +57,7 @@ public class LsCommand extends Command {
 
 		if (quiet) {
 			for (EnginePool pool : pools) {
-				App.ctx.out().println(noTrunc ? pool.id().toString() : UUID.shortId(pool.id()));
+				CliMain.ctx.out().println(noTrunc ? pool.id().toString() : UUID.shortId(pool.id()));
 			}
 			return;
 		}
@@ -99,13 +99,13 @@ public class LsCommand extends Command {
 
 		for (List<String> row : grid) {
 			for (int i = 0; i < columns; i++) {
-				App.ctx.out().printf(
+				CliMain.ctx.out().printf(
 					"%-" + (widths[i] + 2) + "s",
 					row.get(i)
 				);
 			}
 
-			App.ctx.out().println("");
+			CliMain.ctx.out().println("");
 		}
 	}
 

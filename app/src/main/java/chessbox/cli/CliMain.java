@@ -1,10 +1,9 @@
-package chessbox;
+package chessbox.cli;
 
-import chessbox.cli.Cli;
 import chessbox.util.AppPaths;
 
-public class App {
-    public static final ApplicationContext ctx = new ApplicationContext(
+public class CliMain {
+    public static final AppContext ctx = new AppContext(
         AppPaths.installationDir(), System.out, System.err
     );
 

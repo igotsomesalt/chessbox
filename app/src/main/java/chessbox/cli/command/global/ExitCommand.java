@@ -2,7 +2,7 @@ package chessbox.cli.command.global;
 
 import java.util.List;
 
-import chessbox.App;
+import chessbox.cli.CliMain;
 import chessbox.cli.command.Command;
 import chessbox.cli.parse.CommandParser;
 import chessbox.cli.token.Token;
@@ -27,7 +27,7 @@ public class ExitCommand extends Command {
 	@Override
 	public void execute(List<Token> args) throws Exception {
         CommandParser.parse(args, positionals, options);
-		App.ctx.exit();
+		CliMain.ctx.exit();
 	}
     
 }

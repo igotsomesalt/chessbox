@@ -2,7 +2,7 @@ package chessbox.cli.command.pool;
 
 import java.util.List;
 
-import chessbox.App;
+import chessbox.cli.CliMain;
 import chessbox.cli.command.Command;
 import chessbox.cli.parse.CommandParser;
 import chessbox.cli.parse.OptionSpec;
@@ -42,6 +42,6 @@ public class CreatePoolCommand extends Command {
         ParsedArgs parsedArgs = CommandParser.parse(args, positionals, options);
 		String engineId = parsedArgs.positional("engine-id").lexeme();
 		int threads = Integer.parseInt(parsedArgs.option("thread").lexeme());
-		App.ctx.engines().createPool(engineId, threads);
+		CliMain.ctx.engines().createPool(engineId, threads);
 	}
 }

@@ -2,7 +2,7 @@ package chessbox.cli.command.global;
 
 import java.util.List;
 
-import chessbox.App;
+import chessbox.cli.CliMain;
 import chessbox.cli.command.Command;
 import chessbox.cli.command.HelpFormatter;
 import chessbox.cli.parse.CommandParser;
@@ -40,13 +40,13 @@ public class HelpCommand extends Command {
         Token name = parsedArgs.positional("command");
 
         if (name == null) {
-           App.ctx.out().println(HelpFormatter.formatCommands(App.ctx.commands().getAll())); 
+           CliMain.ctx.out().println(HelpFormatter.formatCommands(CliMain.ctx.commands().getAll())); 
         }
 
         else {
-            Command cmd = App.ctx.commands().get(name.lexeme());
+            Command cmd = CliMain.ctx.commands().get(name.lexeme());
             if (cmd == null) throw new IllegalArgumentException("Unknown command");
-            App.ctx.out().println(HelpFormatter.formatCommand(cmd));
+            CliMain.ctx.out().println(HelpFormatter.formatCommand(cmd));
         }
 	}  
 }

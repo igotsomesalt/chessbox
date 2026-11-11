@@ -1,10 +1,11 @@
-package chessbox;
+package chessbox.cli;
 
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.nio.file.Path;
 import java.util.List;
 
+import chessbox.LogWriter;
 import chessbox.cli.command.CommandRegistry;
 import chessbox.cli.command.global.ExitCommand;
 import chessbox.cli.command.global.HelpCommand;
@@ -20,7 +21,7 @@ import chessbox.engine.EngineService;
 import chessbox.game.GameService;
 import chessbox.game.MatchRegistry;
 
-public class ApplicationContext implements AutoCloseable {
+public class AppContext implements AutoCloseable {
 
     private final EnginePoolRegistry enginePoolRegistry;
     private final CommandRegistry commandRegistry;
@@ -33,7 +34,7 @@ public class ApplicationContext implements AutoCloseable {
     boolean setup = true;
     boolean running = true;
 
-    public ApplicationContext(Path appDir, OutputStream out, OutputStream err) {
+    public AppContext(Path appDir, OutputStream out, OutputStream err) {
             this.commandRegistry = new CommandRegistry(
             new VersionCommand(),
             new HelpCommand(),
@@ -87,6 +88,10 @@ public class ApplicationContext implements AutoCloseable {
 
     public void exit() {
         running = false;
+    }
+
+    public boolean running() {
+        return running;
     }
 
     @Override
