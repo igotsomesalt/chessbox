@@ -3,9 +3,18 @@ package chessbox.cli.command;
 import java.util.List;
 
 import chessbox.App;
+import chessbox.cli.parse.CommandParser;
+import chessbox.cli.parse.ParsedArgs;
+import chessbox.cli.parse.PositionalSpec;
 import chessbox.cli.token.Token;
 
 public class HelpCommand extends Command {
+
+    public HelpCommand() {
+        positionals.add(
+            new PositionalSpec("command", Token.Type.WORD, false)
+        );
+    }
 
 	@Override
 	public String name() {
@@ -24,34 +33,18 @@ public class HelpCommand extends Command {
 
 	@Override
 	public void execute(List<Token> args) throws Exception {
+        ParsedArgs parsedArgs = CommandParser.parse(args, positionals, options);
 
-        if (args.size() == 0) {
-            App.ctx.out().print("""
-                Chessbox - An engine simulation and general chess tool.
+        Token name = parsedArgs.positional("command");
 
-                Usage:
-                    [command] [options]
-
-                Commands:
-                """
-            );
-
-            int width = App.ctx.commands().getAll().stream()
-                .mapToInt(c -> c.name().length())
-                .max()
-                .orElse(0) + 4;
-
-            for (Command cmd : App.ctx.commands().getAll()) {
-                App.ctx.out().printf("    %-" + width + "s%s%n", cmd.name(), cmd.description());
-            }
-
-            App.ctx.out().println("\nRun 'help <command> for more information.");
+        if (name == null) {
+           App.ctx.out().println(HelpFormatter.formatCommands(App.ctx.commands().getAll())); 
         }
 
-        if (args.size() == 1) {
-            App.ctx.out().println(HelpFormatter.format(App.ctx.commands().get(args.get(0).lexeme())));
+        else {
+            Command cmd = App.ctx.commands().get(name.lexeme());
+            if (cmd == null) throw new IllegalArgumentException("Unknown command");
+            App.ctx.out().println(HelpFormatter.formatCommand(cmd));
         }
-
-        else throw new IllegalArgumentException("Arguments out of bounds");
 	}  
 }
