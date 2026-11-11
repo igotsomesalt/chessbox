@@ -1,6 +1,6 @@
 package chessbox.cli.parse;
 
-public class MissingValueException extends RuntimeException {
+public final class MissingValueException extends ParseException {
     public MissingValueException(String option) {
         super("Missing value for '%s'");
     }

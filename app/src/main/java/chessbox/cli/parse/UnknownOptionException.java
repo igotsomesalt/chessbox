@@ -1,6 +1,6 @@
 package chessbox.cli.parse;
 
-public class UnknownOptionException extends RuntimeException {
+public final class UnknownOptionException extends ParseException {
     public UnknownOptionException(String option) {
         super(String.format("Unknown option '%s'", option));
     }

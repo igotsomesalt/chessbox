@@ -1,6 +1,6 @@
 package chessbox.cli.parse;
 
-public class MissingPositionalException extends RuntimeException {
+public final class MissingPositionalException extends ParseException {
     public MissingPositionalException(String positional) {
         super(String.format("Missing required argument <%s>", positional));
     }

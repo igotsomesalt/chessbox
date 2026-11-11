@@ -1,6 +1,6 @@
 package chessbox.cli.parse;
 
-public class UnknownCommandException extends RuntimeException {
+public final class UnknownCommandException extends ParseException {
     public UnknownCommandException(String command) {
         super(String.format("Unknown command '%s'", command));
     }
