@@ -14,7 +14,8 @@ public class EnginePool implements AutoCloseable, Indentifiable<UUID> {
     private final EngineConfig config;
     private final BlockingQueue<UciEngine> available;
     private final List<UciEngine> engines;
-    private UUID id = UUID.randomUUID();
+    private final String engineName;
+    private final UUID id = UUID.randomUUID();
 
     public EnginePool(EngineConfig config, int size) throws IOException {
 
@@ -25,6 +26,7 @@ public class EnginePool implements AutoCloseable, Indentifiable<UUID> {
         }
 
         this.config = config;
+        this.engineName = config.id();
         available = new ArrayBlockingQueue<>(size);
         engines = new ArrayList<>(size);
 
@@ -82,6 +84,10 @@ public class EnginePool implements AutoCloseable, Indentifiable<UUID> {
         for (UciEngine engine : engines) {
             available.offer(engine);
         }
+    }
+
+    public String engineName() {
+        return engineName;
     }
 
     @Override 
