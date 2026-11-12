@@ -49,14 +49,14 @@ public class EngineService implements AutoCloseable {
         return pools.getAll();
     }
 
-    public UUID createPool(String engineId, int size) throws NoSuchElementException, IOException {
+    public EnginePool createPool(String engineId, int size) throws NoSuchElementException, IOException {
         EngineConfig config = engines.get(engineId);
 
         EnginePool pool = new EnginePool(config, size);
         pools.register(pool);
 
         emit(new EngineEvent.PoolCreated(pool.id(), config.name(), size));
-        return pool.id();
+        return pool;
     }
 
     public void destroyPool(UUID poolId) throws NoSuchElementException, IOException {
