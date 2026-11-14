@@ -39,8 +39,35 @@ application {
     mainClass = 'chessbox.cli.CliMain'
 }
 
+// Development home directory
+def chessboxHome = rootProject.projectDir.absolutePath
+
+tasks.register('runCli', JavaExec) {
+    group = 'application'
+    description = 'Run the Chessbox CLI'
+
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'chessbox.cli.CliMain'
+
+    systemProperty 'chessbox.home', chessboxHome
+    standardInput = System.in
+}
+
+tasks.register('runDaemon', JavaExec) {
+    group = 'application'
+    description = 'Run the Chessbox daemon'
+
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'chessbox.daemon.DaemonMain'
+
+    systemProperty 'chessbox.home', chessboxHome
+    standardInput = System.in
+}
+
+// Keep the default Gradle run task as a CLI alias
 tasks.named('run', JavaExec) {
-    systemProperty 'chessbox.home', rootProject.projectDir.absolutePath
+    systemProperty 'chessbox.home', chessboxHome
+    standardInput = System.in
 }
 
 tasks.named('test') {
