@@ -1,72 +1,35 @@
+
 package chessbox.cli;
 
 import java.io.OutputStream;
-import java.io.PrintStream;
-import java.nio.file.Path;
-import java.util.List;
 
 import chessbox.cli.command.CommandRegistry;
-import chessbox.cli.command.global.ExitCommand;
-import chessbox.cli.command.global.HelpCommand;
-import chessbox.cli.command.global.VersionCommand;
+import chessbox.cli.command.daemon.DaemonCommand;
+import chessbox.cli.command.global.*;
 import chessbox.cli.command.pool.PoolCommand;
-import chessbox.cli.listener.EngineEventPrinter;
-import chessbox.cli.listener.GameEventPrinter;
-import chessbox.engine.EngineConfig;
-import chessbox.engine.EngineConfigLoader;
-import chessbox.engine.EnginePoolRegistry;
-import chessbox.engine.EngineRegistry;
-import chessbox.engine.EngineService;
-import chessbox.game.GameService;
-import chessbox.game.MatchRegistry;
 import chessbox.util.LogWriter;
 
-public class AppContext implements AutoCloseable {
-
-    private final EnginePoolRegistry enginePoolRegistry;
+public class CliContext {
     private final CommandRegistry commandRegistry;
-    private final EngineRegistry engineRegistry;
-    private final MatchRegistry matchRegistry;
-    private final EngineService engineService;
-    private final GameService gameService;
+    private final DaemonClient daemonClient;
     private final LogWriter logWriter;
 
-    boolean setup = true;
-    boolean running = true;
+    private boolean running = true;
 
-    public AppContext(Path appDir, OutputStream out, OutputStream err) {
-            this.commandRegistry = new CommandRegistry(
+    public CliContext(OutputStream out, OutputStream err) {
+        this.logWriter = new LogWriter(out, err);
+
+        this.daemonClient = new DaemonClient(
+            "127.0.0.1",
+            7878
+        );
+
+        this.commandRegistry = new CommandRegistry(
             new VersionCommand(),
             new HelpCommand(),
             new ExitCommand(),
-            new PoolCommand()
-        );
-        
-        this.engineRegistry = new EngineRegistry();
-
-        try {
-            EngineConfigLoader configLoader = new EngineConfigLoader();
-            List<EngineConfig> configs = configLoader.loadDefaults(appDir);
-            engineRegistry.registerAll(configs);
-        }
-
-        catch (Exception e) {
-            out().println(e.getMessage());
-            setup = false;
-        }
-
-        this.enginePoolRegistry = new EnginePoolRegistry();
-        this.matchRegistry = new MatchRegistry();
-        this.engineService = new EngineService(engineRegistry, enginePoolRegistry);
-        this.gameService = new GameService(matchRegistry);
-        this.logWriter = new LogWriter(out, err);
-
-        engineService.addListener(
-            new EngineEventPrinter(new PrintStream(out), new PrintStream(err))
-        );
-
-        gameService.addListener(
-            new GameEventPrinter(new PrintStream(out), new PrintStream(err))
+            new PoolCommand(),
+            new DaemonCommand()
         );
     }
 
@@ -74,12 +37,8 @@ public class AppContext implements AutoCloseable {
         return commandRegistry;
     }
 
-    public EngineService engines() {
-        return engineService;
-    }
-
-    public GameService games() {
-        return gameService;
+    public DaemonClient daemon() {
+        return daemonClient;
     }
 
     public LogWriter out() {
@@ -92,11 +51,5 @@ public class AppContext implements AutoCloseable {
 
     public boolean running() {
         return running;
-    }
-
-    @Override
-    public void close() throws Exception {
-        engineService.close();
-        gameService.close();
     }
 }
