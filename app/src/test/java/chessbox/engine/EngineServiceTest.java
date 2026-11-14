@@ -147,7 +147,7 @@ public class EngineServiceTest {
     @Test
     void destroyPool() throws IOException {
         engineService.register(config);
-        UUID uuid = engineService.createPool(config.id(), 2);
+        UUID uuid = engineService.createPool(config.id(), 2).id();
 
         engineService.destroyPool(uuid);
 
@@ -168,7 +168,7 @@ public class EngineServiceTest {
     @Test
     void destroyPoolTwice() throws IOException {
         engineService.register(config);
-        UUID uuid = engineService.createPool(config.id(), 2);
+        UUID uuid = engineService.createPool(config.id(), 2).id();
 
         engineService.destroyPool(uuid);
 
@@ -183,7 +183,7 @@ public class EngineServiceTest {
     @Test
     void acquireEngine() throws IOException, InterruptedException {
         engineService.register(config);
-        UUID uuid = engineService.createPool(config.id(), 2);
+        UUID uuid = engineService.createPool(config.id(), 2).id();
 
         UciEngine engine = engineService.acquire(uuid);
 
@@ -195,7 +195,7 @@ public class EngineServiceTest {
     @Test
     void acquireMultipleEngines() throws IOException, InterruptedException {
         engineService.register(config);
-        UUID uuid = engineService.createPool(config.id(), 2);
+        UUID uuid = engineService.createPool(config.id(), 2).id();
 
         UciEngine first = engineService.acquire(uuid);
         UciEngine second = engineService.acquire(uuid);
@@ -219,7 +219,7 @@ public class EngineServiceTest {
     @Test
     void releaseAndReacquireEngine() throws IOException, InterruptedException {
         engineService.register(config);
-        UUID uuid = engineService.createPool(config.id(), 1);
+        UUID uuid = engineService.createPool(config.id(), 1).id();
 
         UciEngine first = engineService.acquire(uuid);
 
@@ -245,7 +245,7 @@ public class EngineServiceTest {
     @Test
     void recreatePoolAfterDestroy() throws IOException {
         engineService.register(config);
-        UUID uuid = engineService.createPool(config.id(), 1);
+        UUID uuid = engineService.createPool(config.id(), 1).id();
 
         engineService.destroyPool(uuid);
 
