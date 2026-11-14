@@ -46,7 +46,6 @@ public class Cli {
 
         while (running) {
             if (!CliMain.ctx.running()) break;
-            System.out.print("chessbox> ");
 
             if (!scanner.hasNextLine()) {
                 break;
