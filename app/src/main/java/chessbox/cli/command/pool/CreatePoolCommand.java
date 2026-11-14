@@ -9,6 +9,8 @@ import chessbox.cli.parse.OptionSpec;
 import chessbox.cli.parse.ParsedArgs;
 import chessbox.cli.parse.PositionalSpec;
 import chessbox.cli.token.Token;
+import chessbox.protocol.req.pool.CreatePoolRequest;
+import chessbox.protocol.res.pool.CreatePoolResponse;
 
 public class CreatePoolCommand extends Command {
     
@@ -42,6 +44,18 @@ public class CreatePoolCommand extends Command {
         ParsedArgs parsedArgs = CommandParser.parse(args, positionals, options);
 		String engineId = parsedArgs.positional("engine-id").lexeme();
 		int threads = Integer.parseInt(parsedArgs.option("thread").lexeme());
-		CliMain.ctx.engines().createPool(engineId, threads);
+
+		CreatePoolResponse res = CliMain.ctx.daemon().send(new CreatePoolRequest(engineId, threads), CreatePoolResponse.class);
+
+		CliMain.ctx.out().printf("""
+			Created pool:
+				%-8s [%s]
+				%-8s [%s]
+				%-8s [%d]
+			""",
+			"id", res.id(),
+			"engine", res.engine(),
+			"threads", res.threads()
+		);
 	}
 }

@@ -4,13 +4,16 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.jspecify.annotations.NonNull;
+
 import chessbox.cli.CliMain;
 import chessbox.cli.command.Command;
 import chessbox.cli.parse.CommandParser;
 import chessbox.cli.parse.OptionSpec;
 import chessbox.cli.parse.ParsedArgs;
 import chessbox.cli.token.Token;
-import chessbox.engine.EnginePool;
+import chessbox.protocol.req.pool.ListPoolsRequest;
+import chessbox.protocol.res.pool.ListPoolsResponse;
 import chessbox.util.UUID;
 
 public class LsCommand extends Command {
@@ -45,18 +48,18 @@ public class LsCommand extends Command {
 		boolean quiet = parsed.hasFlag("quiet");
 		boolean noTrunc = parsed.hasFlag("no-trunc");
 
-		Collection<EnginePool> pools = CliMain.ctx.engines().listEnginePools();
+		Collection<ListPoolsResponse.@NonNull Pool> pools = CliMain.ctx.daemon().send(new ListPoolsRequest(), ListPoolsResponse.class).pools();
 
 		if (parsed.option("engine") != null) {
 			String engine = parsed.option("engine").lexeme();
 
 			pools = pools.stream()
-				.filter(pool -> pool.config().name().equalsIgnoreCase(engine))
+				.filter(pool -> pool.engineName().equalsIgnoreCase(engine))
 				.toList();
 		}
 
 		if (quiet) {
-			for (EnginePool pool : pools) {
+			for (ListPoolsResponse.Pool pool : pools) {
 				CliMain.ctx.out().println(noTrunc ? pool.id().toString() : UUID.shortId(pool.id()));
 			}
 			return;
@@ -71,11 +74,11 @@ public class LsCommand extends Command {
 			"AVAILABLE"
 		));
 
-		for (EnginePool pool : pools) {
+		for (ListPoolsResponse.Pool pool : pools) {
 			grid.add(List.of(
 				formatId(pool.id(), noTrunc),
-				pool.config().name(),
-				String.valueOf(pool.size()),
+				pool.engineName(),
+				String.valueOf(pool.threads()),
 				String.valueOf(pool.available())
 			));
 		}
