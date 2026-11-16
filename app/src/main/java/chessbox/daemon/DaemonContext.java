@@ -44,7 +44,8 @@ public class DaemonContext implements AutoCloseable {
 
         this.requestHandlerRegistry = new RequestHandlerRegistry();
         requestHandlerRegistry.register(CreatePoolRequest.class, new CreatePoolHandler());
-        requestHandlerRegistry.register(ListPoolsRequest.class, new ListPoolsHandler());
+        requestHandlerRegistry.register(ListPoolsRequest.class, new ListPoolsHandler());        
+        requestHandlerRegistry.register(ShutdownDaemonRequest.class, new ShutdownDaemonHandler());
 
         EngineConfigLoader loader = new EngineConfigLoader();
         List<EngineConfig> configs = loader.loadDefaults(appDir);
@@ -85,13 +86,6 @@ public class DaemonContext implements AutoCloseable {
 
     public Duration uptime() {
         return Duration.between(startedAt, Instant.now());
-    }
-
-    public void onShutdown(Runnable callback) {
-        requestHandlerRegistry.register(
-            ShutdownDaemonRequest.class,
-            new ShutdownDaemonHandler(callback)
-        );
     }
 
     @Override

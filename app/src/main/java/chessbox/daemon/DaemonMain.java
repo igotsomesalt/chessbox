@@ -1,12 +1,9 @@
 package chessbox.daemon;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
-
-import com.google.common.util.concurrent.UncheckedExecutionException;
 
 import chessbox.protocol.DaemonStatus;
 import chessbox.util.AppPaths;
@@ -43,21 +40,6 @@ public class DaemonMain {
 
         try (DaemonContext ctx = new DaemonContext(AppPaths.installationDir());
             DaemonServer daemon = new DaemonServer(7878, ctx.requests(), ctx.requestHandlers())) {
-
-            ctx.onShutdown(() -> {
-                ctx.setStatus(DaemonStatus.STOPPING);
-
-                try {
-                    ctx.close();
-                    daemon.stop();
-                } 
-                catch (IOException e) {
-                    throw new UncheckedIOException(e);
-                }
-                catch (Exception e) {
-                    throw new UncheckedExecutionException(e);
-                }
-            });
 
             ctx.setStatus(DaemonStatus.RUNNING);
             daemon.start();

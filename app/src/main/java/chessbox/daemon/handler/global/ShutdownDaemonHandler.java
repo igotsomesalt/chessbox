@@ -7,32 +7,18 @@ import chessbox.protocol.DaemonStatus;
 import chessbox.protocol.req.global.ShutdownDaemonRequest;
 import chessbox.protocol.res.global.DaemonStatusResponse;
 
-public class ShutdownDaemonHandler implements RequestHandler<@NonNull ShutdownDaemonRequest, DaemonStatusResponse> {
-
-    private final Runnable shutdown;
+public class ShutdownDaemonHandler implements RequestHandler<ShutdownDaemonRequest, DaemonStatusResponse> {
 
     @Override
-    public Class<@NonNull ShutdownDaemonRequest> id() {
+    public Class<ShutdownDaemonRequest> id() {
         return ShutdownDaemonRequest.class;
     }
 
-    public ShutdownDaemonHandler(Runnable shutdown) {
-        this.shutdown = shutdown;
-    }
-
     @Override
-    public DaemonStatusResponse handle(@NonNull ShutdownDaemonRequest request) throws Exception {
-        DaemonStatusResponse response = null;
-
-        try {
-            shutdown.run();
-            response = new DaemonStatusResponse(DaemonStatus.STOPPING, "Daemon shutdown");
-        }
-        catch(Exception e) {
-            response = new DaemonStatusResponse(DaemonStatus.RUNNING, "Daemon did not shutdown");
-        }
-
-        return response;
+    public DaemonStatusResponse handle(ShutdownDaemonRequest request) {
+        return new DaemonStatusResponse(
+            DaemonStatus.STOPPING,
+            "Daemon shutting down"
+        );
     }
-
 }
