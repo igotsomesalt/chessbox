@@ -1,4 +1,4 @@
-package chessbox.protocol.res.global;
+package chessbox.protocol.res;
 
 public interface DaemonResponse {  
 

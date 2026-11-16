@@ -4,7 +4,7 @@ import java.io.PrintStream;
 import java.util.function.Consumer;
 
 import chessbox.game.GameEvent;
-import chessbox.game.GameService;
+import chessbox.game.MatchResult;
 
 public class GameEventPrinter implements Consumer<GameEvent> {
 
@@ -73,7 +73,7 @@ public class GameEventPrinter implements Consumer<GameEvent> {
             }
 
             case GameEvent.MatchFinished e -> {
-                GameService.Result result = e.result();
+                MatchResult result = e.result();
 
                 out.printf("""
 

@@ -14,7 +14,7 @@ public sealed interface GameEvent {
     ) implements GameEvent {}
 
     record MatchFinished(
-        GameService.Result result
+        MatchResult result
     ) implements GameEvent {}
 
     record AllGamesSubmitted(

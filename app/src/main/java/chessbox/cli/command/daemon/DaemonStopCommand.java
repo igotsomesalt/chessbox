@@ -6,7 +6,7 @@ import chessbox.cli.CliMain;
 import chessbox.cli.command.Command;
 import chessbox.cli.token.Token;
 import chessbox.protocol.req.global.ShutdownDaemonRequest;
-import chessbox.protocol.res.DaemonStatusResponse;
+import chessbox.protocol.res.global.DaemonStatusResponse;
 
 public class DaemonStopCommand extends Command {
 

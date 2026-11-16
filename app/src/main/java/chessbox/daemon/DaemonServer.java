@@ -11,7 +11,7 @@ import com.fasterxml.jackson.databind.*;
 import chessbox.daemon.handler.RequestHandlerRegistry;
 import chessbox.protocol.req.DaemonRequest;
 import chessbox.protocol.req.global.ShutdownDaemonRequest;
-import chessbox.protocol.res.global.DaemonResponse;
+import chessbox.protocol.res.DaemonResponse;
 
 public class DaemonServer implements AutoCloseable {
     private final ServerSocket server;

@@ -1,7 +1,7 @@
 package chessbox.daemon.handler;
 
 import chessbox.protocol.req.DaemonRequest;
-import chessbox.protocol.res.global.DaemonResponse;
+import chessbox.protocol.res.DaemonResponse;
 import chessbox.util.MappingRegistry;
 
 public class RequestHandlerRegistry extends MappingRegistry<

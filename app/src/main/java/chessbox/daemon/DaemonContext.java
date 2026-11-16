@@ -46,7 +46,7 @@ public class DaemonContext implements AutoCloseable {
         requestHandlerRegistry.register(CreatePoolRequest.class, new CreatePoolHandler());
         requestHandlerRegistry.register(ListPoolsRequest.class, new ListPoolsHandler());
 
-        EngineConfigLoader loader = new EngineConfigLoader(appDir);
+        EngineConfigLoader loader = new EngineConfigLoader();
         List<EngineConfig> configs = loader.loadDefaults(appDir);
 
         engineRegistry.registerAll(configs);

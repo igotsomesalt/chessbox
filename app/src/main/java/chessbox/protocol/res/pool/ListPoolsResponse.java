@@ -5,7 +5,7 @@ import java.util.UUID;
 
 import org.jspecify.annotations.NonNull;
 
-import chessbox.protocol.res.global.DaemonResponse;
+import chessbox.protocol.res.DaemonResponse;
 
 public record ListPoolsResponse(Collection<@NonNull Pool> pools) implements DaemonResponse {
 

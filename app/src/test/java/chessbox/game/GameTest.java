@@ -83,11 +83,11 @@ public class GameTest {
             4
         );
 
-        GameService.Result result = game.submit(matchId, false);
+        MatchResult result = game.submit(matchId, false);
         assertCompletedMatch(result, 10, 4);
 
         // Verify the same match configuration can be reused.
-        GameService.Result second = game.submit(matchId, false);
+        MatchResult second = game.submit(matchId, false);
         assertCompletedMatch(second, 10, 4);
     }
 
@@ -95,7 +95,7 @@ public class GameTest {
     void play10games4threadsVerboseFalse() throws Exception {
         UUID matchId = register2stockfishs(10, 4);
 
-        GameService.Result result = game.submit(matchId, false);
+        MatchResult result = game.submit(matchId, false);
 
         assertCompletedMatch(result, 10, 4);
     }
@@ -104,7 +104,7 @@ public class GameTest {
     void play10games4threadsVerboseTrue() throws Exception {
         UUID matchId = register2stockfishs(10, 4);
 
-        GameService.Result result = game.submit(matchId, true);
+        MatchResult result = game.submit(matchId, true);
 
         assertCompletedMatch(result, 10, 4);
     }
@@ -113,7 +113,7 @@ public class GameTest {
     void play10games1threadVerboseFalse() throws Exception {
         UUID matchId = register2stockfishs(10, 1);
 
-        GameService.Result result = game.submit(matchId, false);
+        MatchResult result = game.submit(matchId, false);
 
         assertCompletedMatch(result, 10, 1);
     }
@@ -122,7 +122,7 @@ public class GameTest {
     void play100games4threadsVerboseFalse() throws Exception {
         UUID matchId = register2stockfishs(100, 4);
 
-        GameService.Result result = game.submit(matchId, false);
+        MatchResult result = game.submit(matchId, false);
 
         assertCompletedMatch(result, 100, 4);
     }
@@ -131,7 +131,7 @@ public class GameTest {
     void submitAsyncReturnsResult() throws Exception {
         UUID matchId = register2stockfishs(10, 4);
 
-        GameService.Result result =
+        MatchResult result =
             game.submitAsync(matchId, false)
                 .get(60, TimeUnit.SECONDS);
 
@@ -167,7 +167,7 @@ public class GameTest {
         );
     }
 
-    private void assertCompletedMatch(GameService.Result result, int expectedGames, int expectedThreads) {
+    private void assertCompletedMatch(MatchResult result, int expectedGames, int expectedThreads) {
         assertNotNull(result);
 
         assertAll(
@@ -194,15 +194,14 @@ public class GameTest {
 
     private UUID register2stockfishs(int games, int threads) throws Exception {
 
-        List<EngineConfig> configs =
-            loader.loadDefaults(getBaseDir());
+        List<EngineConfig> configs = loader.loadDefaults(getBaseDir());
 
         EngineConfig config = configs.get(0);
 
         engineService.register(config);
 
-        UUID id1 = engineService.createPool(config.id(), threads);
-        UUID id2 = engineService.createPool(config.id(), threads);
+        UUID id1 = engineService.createPool(config.id(), threads).id();
+        UUID id2 = engineService.createPool(config.id(), threads).id();
 
         PlayerProvider p1 = new EnginePoolPlayerProvider(id1, engineService);
 
@@ -216,8 +215,8 @@ public class GameTest {
         engineService.register(ec1);
         engineService.register(ec2);
 
-        UUID id1 = engineService.createPool(ec1.id(), threads);
-        UUID id2 = engineService.createPool(ec2.id(), threads);
+        UUID id1 = engineService.createPool(ec1.id(), threads).id();
+        UUID id2 = engineService.createPool(ec2.id(), threads).id();
 
         PlayerProvider p1 = new EnginePoolPlayerProvider(id1, engineService);
 

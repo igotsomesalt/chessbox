@@ -8,7 +8,7 @@ import java.nio.charset.StandardCharsets;
 import com.fasterxml.jackson.databind.*;
 
 import chessbox.protocol.req.*;
-import chessbox.protocol.res.global.DaemonResponse;
+import chessbox.protocol.res.DaemonResponse;
 
 public class DaemonClient {
     private final ObjectMapper mapper = new ObjectMapper();
