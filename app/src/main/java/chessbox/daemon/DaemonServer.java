@@ -9,6 +9,7 @@ import java.util.concurrent.*;
 import com.fasterxml.jackson.databind.*;
 
 import chessbox.daemon.handler.RequestHandlerRegistry;
+import chessbox.protocol.DaemonStatus;
 import chessbox.protocol.req.DaemonRequest;
 import chessbox.protocol.req.global.ShutdownDaemonRequest;
 import chessbox.protocol.res.DaemonResponse;
@@ -35,6 +36,8 @@ public class DaemonServer implements AutoCloseable {
         System.out.println("Chessbox daemon listening on " + server.getLocalPort());
 
         while (!server.isClosed()) {
+            DaemonMain.ctx.setStatus(DaemonStatus.RUNNING);
+            
             try {
                 Socket client = server.accept();
                 workers.submit(() -> handle(client));

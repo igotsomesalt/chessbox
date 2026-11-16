@@ -32,6 +32,10 @@ public class GameService implements AutoCloseable {
         listeners.remove(listener);
     }
 
+    public int activeMatches() {
+        return activeMatches.size();
+    }
+
     public MatchResult submit(UUID matchId, boolean verbose) throws Exception {
         try {
             return submitAsync(matchId, verbose).get();

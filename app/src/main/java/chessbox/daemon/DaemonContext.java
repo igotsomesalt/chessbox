@@ -8,12 +8,14 @@ import java.util.List;
 import java.util.Objects;
 
 import chessbox.daemon.handler.RequestHandlerRegistry;
+import chessbox.daemon.handler.global.DaemonStatusHandler;
 import chessbox.daemon.handler.global.ShutdownDaemonHandler;
 import chessbox.daemon.handler.pool.CreatePoolHandler;
 import chessbox.daemon.handler.pool.ListPoolsHandler;
 import chessbox.engine.*;
 import chessbox.game.*;
 import chessbox.protocol.DaemonStatus;
+import chessbox.protocol.req.global.DaemonStatusRequest;
 import chessbox.protocol.req.global.ShutdownDaemonRequest;
 import chessbox.protocol.req.pool.CreatePoolRequest;
 import chessbox.protocol.req.pool.ListPoolsRequest;
@@ -41,11 +43,13 @@ public class DaemonContext implements AutoCloseable {
         requestRegistry.register("pool.create", CreatePoolRequest.class);
         requestRegistry.register("pool.list", ListPoolsRequest.class);
         requestRegistry.register("daemon.shutdown", ShutdownDaemonRequest.class);
+        requestRegistry.register("daemon.status", DaemonStatusRequest.class);
 
         this.requestHandlerRegistry = new RequestHandlerRegistry();
         requestHandlerRegistry.register(CreatePoolRequest.class, new CreatePoolHandler());
-        requestHandlerRegistry.register(ListPoolsRequest.class, new ListPoolsHandler());        
+        requestHandlerRegistry.register(ListPoolsRequest.class, new ListPoolsHandler());
         requestHandlerRegistry.register(ShutdownDaemonRequest.class, new ShutdownDaemonHandler());
+        requestHandlerRegistry.register(DaemonStatusRequest.class, new DaemonStatusHandler());
 
         EngineConfigLoader loader = new EngineConfigLoader();
         List<EngineConfig> configs = loader.loadDefaults(appDir);
@@ -82,6 +86,10 @@ public class DaemonContext implements AutoCloseable {
 
     public DaemonStatus status() {
         return status;
+    }
+
+    public Instant startedAt() {
+        return startedAt;
     }
 
     public Duration uptime() {

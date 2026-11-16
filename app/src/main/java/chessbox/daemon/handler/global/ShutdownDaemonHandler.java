@@ -1,7 +1,6 @@
 package chessbox.daemon.handler.global;
 
-import org.jspecify.annotations.NonNull;
-
+import chessbox.daemon.DaemonMain;
 import chessbox.daemon.handler.RequestHandler;
 import chessbox.protocol.DaemonStatus;
 import chessbox.protocol.req.global.ShutdownDaemonRequest;
@@ -18,7 +17,11 @@ public class ShutdownDaemonHandler implements RequestHandler<ShutdownDaemonReque
     public DaemonStatusResponse handle(ShutdownDaemonRequest request) {
         return new DaemonStatusResponse(
             DaemonStatus.STOPPING,
-            "Daemon shutting down"
+            ProcessHandle.current().pid(),
+            DaemonMain.ctx.startedAt().toString(),
+            DaemonMain.ctx.uptime().toSeconds(),
+            DaemonMain.ctx.engines().listEnginePools().size(),
+            DaemonMain.ctx.games().activeMatches()
         );
     }
 }

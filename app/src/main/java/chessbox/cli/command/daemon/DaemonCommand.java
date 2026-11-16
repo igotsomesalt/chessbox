@@ -12,7 +12,8 @@ public class DaemonCommand extends Command implements Dispatcher {
 		super();
 		leafCommands.registerAll(
 			new DaemonStartCommand(),
-            new DaemonStopCommand()
+            new DaemonStopCommand(),
+            new DaemonStatusCommand()
 		);
 	}
 
