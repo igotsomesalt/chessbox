@@ -13,6 +13,10 @@ public class LogWriter {
         this.err = new PrintStream(err, true);
     }
 
+    public void flush() {
+        out.flush();
+    }
+
     public void println() {
         out.println();
     }
