@@ -25,7 +25,7 @@ public class CliMain {
             if (args.length == 0 || (args.length == 1 && args[0].equals("shell"))) {
                 cli.run();
             } else {
-                cli.execute(String.join(" ", args));
+                cli.execute(args);
             }
 
             System.out.println(String.format(

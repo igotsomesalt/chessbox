@@ -55,11 +55,11 @@ public class Cli {
                 continue;
             }
 
-            execute(input);
+            execute(input.split(" "));
         }
     }
 
-    public void execute(String input) {
+    public void execute(String[] input) {
         Command command = null;
 
         try {

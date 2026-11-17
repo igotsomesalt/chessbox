@@ -8,9 +8,9 @@ public class Tokenizer {
 
     private Tokenizer() {}
     
-    public static List<Token> tokenize(String command) {
+    public static List<Token> tokenize(String[] command) {
 
-        List<String> tokens = Arrays.asList(command.split(" "));
+        List<String> tokens = Arrays.asList(command);
         List<Token> newTokens = new ArrayList<>();
 
         for (int i = 0; i < tokens.size(); i++) {
