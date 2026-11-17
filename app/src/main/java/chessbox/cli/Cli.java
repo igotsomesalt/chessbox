@@ -39,11 +39,11 @@ public class Cli {
     }
 
     public void run() {
+        printWelcome();
 
-        if (CliMain.ctx.shell()) printWelcome();
-
-        do {
-            if (CliMain.ctx.shell()) CliMain.ctx.out().print("chessbox # ");
+        while (true) {
+            CliMain.ctx.out().print("chessbox # ");
+            CliMain.ctx.out().flush();
 
             if (!scanner.hasNextLine()) {
                 break;
@@ -55,25 +55,35 @@ public class Cli {
                 continue;
             }
 
-            Command command = null;
-
-            try {
-                List<Token> tokens = Tokenizer.tokenize(input);
-                Token dispatch = tokens.get(0);
-                command = registry.get(dispatch.lexeme());
-                if (command == null) throw new UnknownCommandException(input);
-                command.execute(tokens.subList(1, tokens.size()));
-            } 
-            catch (ParseException e) {
-                CliMain.ctx.out().println(e.getMessage());
-                if (command != null) CliMain.ctx.out().println(command.usage());
-            }
-
-            catch (Exception e) {
-                System.err.println(e.getMessage());
-            }
+            execute(input);
         }
-
-        while (CliMain.ctx.shell());
     }
+
+    public void execute(String input) {
+        Command command = null;
+
+        try {
+            List<Token> tokens = Tokenizer.tokenize(input);
+
+            if (tokens.isEmpty()) return;
+
+            Token dispatch = tokens.get(0);
+            command = registry.get(dispatch.lexeme());
+
+            if (command == null) throw new UnknownCommandException(dispatch.lexeme());
+
+            command.execute(tokens.subList(1, tokens.size()));
+
+        } catch (ParseException e) {
+            CliMain.ctx.out().println(e.getMessage());
+
+            if (command != null) {
+                CliMain.ctx.out().println(command.usage());
+            }
+
+        } catch (Exception e) {
+            CliMain.ctx.out().println(e.getMessage());
+        }
+    }
+
 }
