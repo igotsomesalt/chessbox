@@ -14,7 +14,6 @@ import chessbox.cli.token.Tokenizer;
 public class Cli {
     private CommandRegistry registry;
     private final Scanner scanner;
-    private boolean running = false;
 
     public Cli(InputStream in, CommandRegistry registry) {
         this.registry = registry;
@@ -40,12 +39,11 @@ public class Cli {
     }
 
     public void run() {
-        running = true;
 
-        printWelcome();
+        if (CliMain.ctx.shell()) printWelcome();
 
-        while (running) {
-            if (!CliMain.ctx.running()) break;
+        do {
+            if (CliMain.ctx.shell()) CliMain.ctx.out().print("chessbox # ");
 
             if (!scanner.hasNextLine()) {
                 break;
@@ -75,5 +73,7 @@ public class Cli {
                 System.err.println(e.getMessage());
             }
         }
+
+        while (CliMain.ctx.shell());
     }
 }

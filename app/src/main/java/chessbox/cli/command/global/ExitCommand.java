@@ -27,7 +27,7 @@ public class ExitCommand extends Command {
 	@Override
 	public void execute(List<Token> args) throws Exception {
         CommandParser.parse(args, positionals, options);
-		CliMain.ctx.exit();
+		CliMain.ctx.exitShell();
 	}
     
 }

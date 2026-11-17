@@ -82,7 +82,7 @@ tasks.named('test') {
 tasks.named('jar') {
     manifest {
         attributes(
-            'Implementation-Version': project.version
+            'Main-Class': 'chessbox.cli.CliMain'
         )
     }
 }

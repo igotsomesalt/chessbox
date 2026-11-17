@@ -14,7 +14,7 @@ public class CliContext {
     private final DaemonClient daemonClient;
     private final LogWriter logWriter;
 
-    private boolean running = true;
+    private boolean shell = false;
 
     public CliContext(OutputStream out, OutputStream err) {
         this.logWriter = new LogWriter(out, err);
@@ -45,11 +45,15 @@ public class CliContext {
         return logWriter;
     }
 
-    public void exit() {
-        running = false;
+    public void enterShell() {
+        shell = true;
+    }
+    
+    public void exitShell() {
+        shell = false;
     }
 
-    public boolean running() {
-        return running;
+    public boolean shell() {
+        return shell;
     }
 }
