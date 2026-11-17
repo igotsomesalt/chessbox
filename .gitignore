@@ -37,3 +37,4 @@ build
 .env
 app/bin/
 .vscode/
+META-INF/
