@@ -35,11 +35,6 @@ public class CreatePoolCommand extends Command {
 	}
 
 	@Override
-    public String usage() {
-        return "pool create <engine-id> [--size <count>]";
-    }
-
-	@Override
 	public void execute(List<Token> args) throws Exception {
         ParsedArgs parsedArgs = CommandParser.parse(args, positionals, options);
 		String engineId = parsedArgs.positional("engine-id").lexeme();

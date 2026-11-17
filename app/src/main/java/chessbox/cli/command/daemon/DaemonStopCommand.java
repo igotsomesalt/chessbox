@@ -21,11 +21,6 @@ public class DaemonStopCommand extends Command {
     }
 
     @Override
-    public String usage() {
-        return "daemon stop";
-    }
-
-    @Override
     public void execute(List<Token> args) throws Exception {
         DaemonStatusResponse response = CliMain.ctx.daemon().send(new ShutdownDaemonRequest(), DaemonStatusResponse.class);
         CliMain.ctx.out().println("Daemon stopped");

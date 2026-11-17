@@ -19,11 +19,6 @@ public class ShellCommand extends Command {
 	}
 
 	@Override
-	public String usage() {
-		return "shell";
-	}
-
-	@Override
 	public void execute(List<Token> args) throws Exception {
 		CommandParser.parse(args, positionals, options);
         

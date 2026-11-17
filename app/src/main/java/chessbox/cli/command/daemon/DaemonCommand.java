@@ -28,11 +28,6 @@ public class DaemonCommand extends Command implements Dispatcher {
 	}
 
 	@Override
-	public String usage() {
-		return "daemon <command> [options]";
-	}
-
-	@Override
 	public void execute(List<Token> args) throws Exception {
 		dispatch(name(), args, leafCommands);
 	}

@@ -18,11 +18,6 @@ public class VersionCommand extends Command {
 	public String description() {
         return "Display application version";
 	}	
-    
-    @Override
-	public String usage() {
-		return "version";
-	}
 
 	@Override
 	public void execute(List<Token> args) throws Exception {

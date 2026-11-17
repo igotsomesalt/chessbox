@@ -27,11 +27,6 @@ public class PoolCommand extends Command implements Dispatcher {
 	}
 
 	@Override
-	public String usage() {
-		return "pool <command> [options]";
-	}
-
-	@Override
 	public void execute(List<Token> args) throws Exception {
 		dispatch(name(), args, leafCommands);
 	}

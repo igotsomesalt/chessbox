@@ -37,11 +37,6 @@ public class LsCommand extends Command {
 	}
 
 	@Override
-	public String usage() {
-		return "pool ls [options]";
-	}
-
-	@Override
 	public void execute(List<Token> args) throws Exception {
 		ParsedArgs parsed = CommandParser.parse(args, positionals, options);
 

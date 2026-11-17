@@ -22,7 +22,37 @@ public abstract class Command implements Indentifiable<String> {
 
     public abstract String name();
     public abstract String description();
-    public abstract String usage();
+
+    public String usage() {
+        StringBuilder sb = new StringBuilder("Usage: chessbox ");
+        sb.append(name());
+
+        for (PositionalSpec spec : positionals) {
+            String arg = "<" + spec.name() + ">";
+
+            if (!spec.required()) {
+                arg = "[" + arg + "]";
+            }
+
+            sb.append(" ").append(arg);
+        }
+
+        for (OptionSpec spec : options) {
+            String arg = "--" + spec.name();
+
+            if (spec.takesValue()) {
+                arg += " <" + spec.expectedType().name().toLowerCase() + ">";
+            }
+
+            if (!spec.required()) {
+                arg = "[" + arg + "]";
+            }
+
+            sb.append(" ").append(arg);
+        }
+
+        return sb.toString();
+    }
 
     public Collection<Command> leafCommands() {
         return leafCommands.getAll();

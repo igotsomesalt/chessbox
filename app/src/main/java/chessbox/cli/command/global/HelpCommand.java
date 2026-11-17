@@ -28,11 +28,6 @@ public class HelpCommand extends Command {
 		return "Show help information";
 	}
 
-    @Override 
-    public String usage() {
-        return "help [command]";
-    }
-
 	@Override
 	public void execute(List<Token> args) throws Exception {
         ParsedArgs parsedArgs = CommandParser.parse(args, positionals, options);
