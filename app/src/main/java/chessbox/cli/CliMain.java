@@ -8,18 +8,28 @@ public class CliMain {
         try {
             ctx = new CliContext(System.out, System.err);
         } catch (Exception e) {
+            System.err.println(e.getMessage());
             throw new ExceptionInInitializerError(e);
         }
     }
 
-    public static void main(String[] args) {
-        Cli cli = new Cli(System.in, ctx.commands());
+     public static void main(String[] args) {
 
-        if (args.length == 0 ||
-            (args.length == 1 && args[0].equals("shell"))) {
-            cli.run();
-        } else {
-            cli.execute(String.join(" ", args));
+        try {
+            CliContext ctx = new CliContext(System.out, System.err);
+
+            Cli cli = new Cli(System.in, ctx.commands());
+
+            if (args.length == 0 ||
+                (args.length == 1 && args[0].equals("shell"))) {
+                cli.run();
+            } else {
+                cli.execute(String.join(" ", args));
+            }
+
+        } catch (Throwable e) {
+            e.printStackTrace();
+            System.exit(1);
         }
     }
 }
